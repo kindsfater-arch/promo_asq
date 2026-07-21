@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Эквайринг и СБП — акции банков · {{ today|ru_date }}</title>
+<meta name="description" content="Сводка действующих акций по торговому эквайрингу и СБП: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Финансовый бюллетень: бумага, чернила, табличные цифры.
+   Ноль внешних зависимостей — файл открывается без сети.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --paper:      #f4f0e6;
+  --paper-2:    #fbf9f4;
+  --ink:        #17140f;
+  --ink-soft:   #5f5849;
+  --ink-faint:  #8c8474;
+  --rule:       #d4cdba;
+  --rule-soft:  #e4ded0;
+  --accent:     #a8301a;
+  --accent-dim: #a8301a1a;
+  --good:       #1f6b41;
+  --good-dim:   #1f6b4114;
+  --shadow:     0 1px 2px rgba(23,20,15,.06), 0 8px 24px -12px rgba(23,20,15,.18);
+  --display: ui-serif, "Iowan Old Style", "New York", "Hoefler Text", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --measure: 1180px;
+}
+:root[data-theme="dark"] {
+  --paper:      #131110;
+  --paper-2:    #1c1917;
+  --ink:        #ece5d6;
+  --ink-soft:   #a49c8b;
+  --ink-faint:  #7a7264;
+  --rule:       #332e28;
+  --rule-soft:  #262220;
+  --accent:     #e2704f;
+  --accent-dim: #e2704f1f;
+  --good:       #5cb98a;
+  --good-dim:   #5cb98a1a;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#131110; --paper-2:#1c1917; --ink:#ece5d6; --ink-soft:#a49c8b;
+    --ink-faint:#7a7264; --rule:#332e28; --rule-soft:#262220;
+    --accent:#e2704f; --accent-dim:#e2704f1f; --good:#5cb98a; --good-dim:#5cb98a1a;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+
+/* Фирменные цвета банков приходят из данных как есть. Тёмно-синий ВТБ
+   (#0A2896) на угольном фоне сливается — в тёмной теме подмешиваем белый. */
+[style*="--bar"] { --bar-vis: var(--bar); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [style*="--bar"] { --bar-vis: color-mix(in srgb, var(--bar) 55%, #fff); }
+}
+:root[data-theme="dark"] [style*="--bar"] { --bar-vis: color-mix(in srgb, var(--bar) 55%, #fff); }
+:root[data-theme="light"] [style*="--bar"] { --bar-vis: var(--bar); }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  /* Зерно бумаги — inline SVG, ничего не грузится извне. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"] body { background-blend-mode: screen; }
+
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.5rem); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.rule { height: 1px; background: var(--rule); border: 0; margin: 0; }
+
+/* ── навигация ─────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.6) blur(12px);
+  -webkit-backdrop-filter: saturate(1.6) blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav-in { display: flex; align-items: center; gap: 1.25rem; height: 3.5rem; }
+.nav-mark {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); font-weight: 700;
+  white-space: nowrap;
+}
+.nav-links { display: flex; gap: 1.1rem; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-soft);
+  text-decoration: none; white-space: nowrap; padding: .35rem 0;
+  border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+}
+.nav-links a:hover, .nav-links a.on { color: var(--ink); border-bottom-color: var(--accent); }
+.theme {
+  flex-shrink: 0; width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  border: 1px solid var(--rule); background: var(--paper-2); color: var(--ink);
+  cursor: pointer; font-size: .95rem; line-height: 1;
+  display: grid; place-items: center; transition: transform .3s, border-color .2s;
+}
+.theme:hover { transform: rotate(-25deg); border-color: var(--accent); }
+.theme .sun { display: none; }
+:root[data-theme="dark"] .theme .sun { display: block; }
+:root[data-theme="dark"] .theme .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme .sun { display: block; }
+  :root:not([data-theme="light"]) .theme .moon { display: none; }
+}
+
+/* ── шапка ─────────────────────────────────────────────────── */
+.masthead { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+.masthead .kicker {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem;
+  display: flex; align-items: center; gap: .7rem;
+}
+.masthead .kicker::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.masthead h1 {
+  font-size: clamp(2.4rem, 7.5vw, 5.2rem); line-height: .98; margin: 0 0 1.2rem;
+  font-weight: 600; letter-spacing: -.025em;
+}
+.masthead h1 em { font-style: italic; color: var(--accent); }
+.lede {
+  font-size: clamp(1.02rem, 1.9vw, 1.24rem); color: var(--ink-soft);
+  max-width: 46ch; margin: 0 0 2rem;
+}
+.meta {
+  display: flex; flex-wrap: wrap; gap: .5rem 2rem;
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-faint);
+  padding-top: 1.2rem; border-top: 3px double var(--rule);
+}
+.meta b { color: var(--ink); font-weight: 500; }
+
+/* ── секции ────────────────────────────────────────────────── */
+section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
+.head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.head .num {
+  font-family: var(--mono); font-size: .72rem; color: var(--accent);
+  letter-spacing: .1em; padding-top: .5rem;
+}
+.head h2 {
+  font-size: clamp(1.5rem, 3.4vw, 2.3rem); margin: 0; font-weight: 600;
+  letter-spacing: -.018em;
+}
+.head .note {
+  font-family: var(--sans); font-size: .8rem; color: var(--ink-faint);
+  margin-left: auto; text-align: right; max-width: 30ch;
+}
+
+/* ── инсайты ───────────────────────────────────────────────── */
+/* auto-fit, а не фиксированные 4 колонки: выводов может оказаться меньше,
+   и жёсткая сетка оставляла бы пустую ячейку. */
+.insights {
+  display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+.insight {
+  background: var(--paper-2); padding: 1.5rem 1.3rem 1.4rem;
+  position: relative; transition: background .25s;
+}
+.insight:hover { background: var(--paper); }
+.insight::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--bar-vis); opacity: .85;
+}
+.insight .k {
+  font-family: var(--mono); font-size: .63rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: .9rem;
+}
+.insight .v {
+  font-family: var(--mono); font-size: clamp(1.75rem, 4vw, 2.3rem);
+  font-variant-numeric: tabular-nums; letter-spacing: -.03em;
+  line-height: 1; margin-bottom: .6rem; color: var(--ink);
+}
+.insight .t { font-weight: 600; margin-bottom: .35rem; line-height: 1.3; }
+.insight .b { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); line-height: 1.45; }
+
+/* ── карточки банков ───────────────────────────────────────── */
+/* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
+.banks { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px)  { .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1120px) { .banks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bank {
+  min-width: 0; overflow-wrap: anywhere;
+  background: var(--paper-2); border: 1px solid var(--rule);
+  border-top: 3px solid var(--bar-vis);
+  padding: 1.5rem 1.4rem 1.3rem; display: flex; flex-direction: column;
+  transition: transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s, border-color .3s;
+}
+.bank:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.bank h3 { font-size: 1.3rem; margin: 0 0 .2rem; font-weight: 600; letter-spacing: -.01em; }
+.bank .url {
+  font-family: var(--mono); font-size: .66rem; color: var(--ink-faint);
+  text-decoration: none; word-break: break-all; display: block; margin-bottom: 1.1rem;
+}
+.bank .url:hover { color: var(--accent); }
+.rate-box {
+  display: flex; align-items: flex-end; gap: .6rem; padding-bottom: 1rem;
+  margin-bottom: 1rem; border-bottom: 1px solid var(--rule-soft);
+}
+.rate {
+  font-family: var(--mono); font-size: 2.6rem; line-height: .9;
+  font-variant-numeric: tabular-nums; letter-spacing: -.045em;
+}
+.rate.win { color: var(--good); }
+.rate-cap {
+  font-family: var(--sans); font-size: .7rem; color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: .09em; padding-bottom: .25rem;
+}
+.tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+/* Без nowrap: длинная аудитория акции («новым клиентам и действующим
+   без договора эквайринга 180 дней») иначе распирает карточку на мобиле. */
+.tag {
+  font-family: var(--sans); font-size: .69rem; padding: .24rem .55rem;
+  border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-soft);
+  max-width: 100%; overflow-wrap: anywhere;
+}
+.tag.hot { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.tag.win { border-color: var(--good); color: var(--good); background: var(--good-dim); }
+.promo-title { font-weight: 600; line-height: 1.3; margin-bottom: .3rem; }
+.promo-note { font-family: var(--sans); font-size: .84rem; color: var(--ink-soft); margin-bottom: .8rem; }
+.cond {
+  list-style: none; padding: 0; margin: 0 0 1rem;
+  font-family: var(--sans); font-size: .8rem; color: var(--ink-soft);
+}
+.cond li { padding-left: .95rem; position: relative; margin-bottom: .3rem; line-height: 1.4; }
+.cond li::before { content: "—"; position: absolute; left: 0; color: var(--ink-faint); }
+.kv {
+  display: grid; grid-template-columns: auto 1fr; gap: .35rem .9rem;
+  font-family: var(--sans); font-size: .8rem; margin-top: auto;
+  padding-top: .9rem; border-top: 1px solid var(--rule-soft);
+}
+.kv dt { color: var(--ink-faint); }
+.kv dd { margin: 0; text-align: right; }
+.kv dd .mono { font-size: .86rem; }
+.flag {
+  font-family: var(--sans); font-size: .74rem; color: var(--accent);
+  background: var(--accent-dim); padding: .5rem .65rem; margin-top: .9rem;
+  border-left: 2px solid var(--accent); line-height: 1.4;
+}
+
+/* ── таблица ───────────────────────────────────────────────── */
+.scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--paper-2); }
+table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: .87rem; }
+th, td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+thead th {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+  border-bottom: 2px solid var(--rule); position: sticky; top: 0;
+  background: var(--paper-2); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr { transition: background .2s; }
+tbody tr:hover { background: var(--paper); }
+td.name { font-weight: 600; white-space: nowrap; }
+td.name::before {
+  content: ""; display: inline-block; width: 8px; height: 8px;
+  background: var(--bar-vis); margin-right: .55rem; vertical-align: middle;
+}
+td .num-cell { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+td .best { color: var(--good); font-weight: 700; }
+td .sub { display: block; font-family: var(--sans); font-size: .76rem; color: var(--ink-faint); margin-top: .2rem; }
+
+/* ── СБП ───────────────────────────────────────────────────── */
+.sbp { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.sbp-row {
+  background: var(--paper-2); padding: 1.1rem 1.3rem;
+  display: grid; gap: .3rem 1.2rem; align-items: center;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) { .sbp-row { grid-template-columns: 13rem 1fr 6rem; } }
+.sbp-row .who { font-weight: 600; }
+.sbp-row .who small { display: block; font-family: var(--sans); font-size: .74rem; color: var(--ink-faint); font-weight: 400; }
+.bars { display: flex; flex-direction: column; gap: .3rem; }
+.bar-line { display: flex; align-items: center; gap: .6rem; }
+.bar-track { flex: 1; height: 7px; background: var(--rule-soft); position: relative; overflow: hidden; }
+.bar-fill {
+  height: 100%; background: var(--bar-vis); width: var(--w);
+  transform-origin: left; animation: grow .9s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.bar-line .seg { font-family: var(--sans); font-size: .74rem; color: var(--ink-soft); min-width: 11rem; }
+.bar-line .val { font-family: var(--mono); font-size: .82rem; font-variant-numeric: tabular-nums; min-width: 3rem; text-align: right; }
+.sbp-row .vat { font-family: var(--sans); font-size: .75rem; text-align: left; }
+@media (min-width: 720px) { .sbp-row .vat { text-align: right; } }
+.vat.no { color: var(--good); font-weight: 600; }
+.sbp-row .none { font-family: var(--sans); font-size: .82rem; color: var(--ink-faint); font-style: italic; }
+
+/* ── прочее ────────────────────────────────────────────────── */
+.notes {
+  margin-top: 2rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule);
+  background: var(--paper-2); font-family: var(--sans); font-size: .82rem;
+  color: var(--ink-soft);
+}
+.notes h4 {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0 0 .8rem; font-weight: 500;
+}
+.notes ul { margin: 0; padding-left: 1.1rem; }
+.notes li { margin-bottom: .4rem; line-height: 1.5; }
+.notes b { color: var(--ink); font-weight: 600; }
+
+footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
+.disclaimer { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.6; }
+.disclaimer strong { color: var(--ink); }
+.sources { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: 1.3rem; max-width: 100%; }
+.sources a { font-family: var(--mono); font-size: .68rem; color: var(--ink-faint); text-decoration: none; }
+.sources a:hover { color: var(--accent); text-decoration: underline; }
+.colophon {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-faint); margin-top: 2rem;
+}
+
+/* ── появление при скролле ─────────────────────────────────── */
+.rise { opacity: 0; transform: translateY(18px); }
+.rise.in { animation: rise .7s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { opacity: 1; transform: none; animation: none !important; }
+  .bar-fill { animation: none; }
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <span class="nav-mark">Эквайринг&nbsp;/&nbsp;СБП</span>
+    <div class="nav-links">
+      <a href="#insights">Выводы</a>
+      <a href="#banks">Банки</a>
+      <a href="#table">Сравнение</a>
+      <a href="#sbp">СБП</a>
+    </div>
+    <button class="theme" id="theme" type="button" aria-label="Переключить тему">
+      <span class="moon" aria-hidden="true">◑</span><span class="sun" aria-hidden="true">◐</span>
+    </button>
+  </div>
+</nav>
+
+<header class="wrap masthead">
+  <div class="kicker">Обзор рынка · {{ rows|length }} {{ plural(rows|length, 'банк', 'банка', 'банков') }}</div>
+  <h1>Акции по эквайрингу<br>и <em>СБП</em></h1>
+  <p class="lede">
+    Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
+    дедлайны и условия по Системе быстрых платежей.
+  </p>
+  <div class="meta">
+    <span>Актуально на <b>{{ today|ru_date }}</b></span>
+    <span>Источники: <b>{{ rows|length }} {{ plural(rows|length, 'официальный сайт', 'официальных сайта', 'официальных сайтов') }}</b></span>
+    <span>Обновлено <b class="mono">{{ published_at.strftime('%d.%m.%Y %H:%M') }}</b></span>
+  </div>
+</header>
+
+<main>
+
+<section id="insights" class="wrap">
+  <div class="head">
+    <span class="num">01</span>
+    <h2>Ключевые выводы</h2>
+    <span class="note">Пересчитывается из данных при каждом обновлении</span>
+  </div>
+  <div class="insights rise">
+    {% for i in insights %}
+    <div class="insight" style="--bar: {{ i.color }}">
+      <div class="k">{{ i.kicker }}</div>
+      <div class="v">{{ i.value }}</div>
+      <div class="t">{{ i.title }}</div>
+      <div class="b">{{ i.body }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="banks" class="wrap">
+  <div class="head">
+    <span class="num">02</span>
+    <h2>Предложения банков</h2>
+    <span class="note">Зелёным отмечена лучшая ставка на рынке</span>
+  </div>
+  <div class="banks">
+    {% for r in rows %}
+    {% set b = r.bank %}
+    <article class="bank rise" style="--bar: {{ b.color }}">
+      <h3>{{ b.name }}</h3>
+      <a class="url" href="{{ b.source_url }}" target="_blank" rel="noopener">{{ b.source_url }}</a>
+
+      <div class="rate-box">
+        <span class="rate mono {{ 'win' if r.is_best_rate }}">{{ b.best_rate|pct }}</span>
+        <span class="rate-cap">{{ 'лучшая ставка' if r.is_best_rate else 'от' }}</span>
+      </div>
+
+      <div class="tags">
+        {% if r.active %}<span class="tag hot">🔥 {{ r.active|length }} {{ plural(r.active|length, 'акция', 'акции', 'акций') }}</span>{% endif %}
+        {% if r.deadline %}<span class="tag hot">⏰ до {{ r.deadline|ru_date }}</span>{% endif %}
+        {% if r.headline and r.headline.audience %}<span class="tag">🆕 {{ r.headline.audience|truncate(32, true, '…') }}</span>{% endif %}
+        {% if r.is_best_sbp %}<span class="tag win">★ лучшая СБП</span>{% endif %}
+        {% if b.status == 'stale' %}<span class="tag">⚠️ данные от {{ b.checked_at|ru_date }}</span>{% endif %}
+      </div>
+
+      {% if r.headline %}
+      <div class="promo-title">{{ r.headline.title }}</div>
+      {% if r.headline.rate_note %}<div class="promo-note">{{ r.headline.rate_note }}</div>{% endif %}
+      {% if r.headline.conditions %}
+      <ul class="cond">
+        {% for c in r.headline.conditions[:4] %}<li>{{ c }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+      {% else %}
+      <div class="promo-note">{{ b.base_rate_note or 'Временных акций не заявлено' }}</div>
+      {% endif %}
+
+      {% if r.active|length > 1 %}
+      <ul class="cond">
+        {% for p in r.active[1:] %}
+        <li><b>{{ p.title }}</b>{% if p.rate_note %} — {{ p.rate_note }}{% endif %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <dl class="kv">
+        <dt>СБП</dt><dd><span class="mono {{ 'best' if r.is_best_sbp }}">{{ r.sbp_range }}</span></dd>
+        <dt>Базовая ставка</dt><dd><span class="mono">{{ b.base_rate_from|pct }}</span></dd>
+        {% if r.days_left is not none %}
+        <dt>До конца акции</dt><dd><span class="mono">{{ r.days_left }} дн.</span></dd>
+        {% endif %}
+      </dl>
+
+      {% if b.extras %}
+      <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
+        {% for e in b.extras[:3] %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if b.notes %}<div class="flag">{{ b.notes[0] }}</div>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="table" class="wrap">
+  <div class="head">
+    <span class="num">03</span>
+    <h2>Сводное сравнение</h2>
+    <span class="note">Прокрутите таблицу вбок на узком экране</span>
+  </div>
+  <div class="scroller rise">
+    <table>
+      <thead>
+        <tr>
+          <th>Банк</th>
+          <th>Главное предложение</th>
+          <th>Ставка</th>
+          <th>Срок</th>
+          <th>СБП</th>
+          <th>НДС</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        {% set b = r.bank %}
+        <tr>
+          <td class="name" style="--bar: {{ b.color }}">{{ b.name }}</td>
+          <td>
+            {% if r.headline %}{{ r.headline.title }}
+              {% if r.headline.rate_note %}<span class="sub">{{ r.headline.rate_note }}</span>{% endif %}
+            {% else %}<span class="sub">{{ b.base_rate_note or '—' }}</span>{% endif %}
+          </td>
+          <td><span class="num-cell {{ 'best' if r.is_best_rate }}">{{ b.best_rate|pct }}</span></td>
+          <td>
+            {% if r.deadline %}<span class="num-cell">до {{ r.deadline|ru_date }}</span>
+              <span class="sub">{{ r.days_left }} дн.</span>
+            {% else %}<span class="sub">бессрочно</span>{% endif %}
+          </td>
+          <td><span class="num-cell {{ 'best' if r.is_best_sbp }}">{{ r.sbp_range }}</span></td>
+          <td>
+            {% if b.vat_note %}<span class="sub" style="margin-top:0">{{ b.vat_note }}</span>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% set flagged = rows|selectattr('bank.notes')|list %}
+  {% if flagged %}
+  <div class="notes rise">
+    <h4>Оговорки и расхождения</h4>
+    <ul>
+      {% for r in flagged %}
+        {% for n in r.bank.notes %}
+        <li><b>{{ r.bank.name }}:</b> {{ n }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for r in rows %}
+        {% for p in r.ended %}
+        <li><b>{{ r.bank.name }}:</b> акция «{{ p.title }}» завершена{% if p.valid_until %} {{ p.valid_until|ru_date }}{% endif %} — в активных предложениях не учтена.</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+
+<hr class="rule">
+
+<section id="sbp" class="wrap">
+  <div class="head">
+    <span class="num">04</span>
+    <h2>Система быстрых платежей</h2>
+    <span class="note">Длина полосы — размер комиссии, короче лучше</span>
+  </div>
+  <div class="sbp rise">
+    {% for r in rows %}
+    {% set b = r.bank %}
+    <div class="sbp-row" style="--bar: {{ b.color }}">
+      <div class="who">
+        {{ b.name }}
+        <small>{{ b.sbp_note|truncate(70) if b.sbp_note else '' }}</small>
+      </div>
+      {% if b.sbp_rates %}
+      <div class="bars">
+        {% for s in b.sbp_rates %}
+        <div class="bar-line">
+          <span class="seg">{{ s.segment }}</span>
+          <span class="bar-track"><span class="bar-fill" style="--w: {{ ((s.rate or 0) / 0.7 * 100)|round(1) }}%"></span></span>
+          <span class="val">{{ s.rate|pct }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="none">Ставки на странице банка не опубликованы</div>
+      {% endif %}
+      <div class="vat {{ 'no' if b.sbp_vat_free }}">
+        {% if b.sbp_vat_free %}НДС не начисляется
+        {% elif b.sbp_vat_free is none %}НДС не раскрыт
+        {% else %}НДС по общим правилам{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p class="disclaimer">
+    <strong>Информация актуальна на {{ today|ru_date }} и не является публичной офертой.</strong>
+    Данные собраны с официальных сайтов банков автоматически и могут содержать неточности
+    из-за изменений на стороне банка. Точные тарифы, лимиты и условия участия в акциях
+    уточняйте в банке перед заключением договора. Ставки указаны без учёта индивидуальных
+    условий, которые банк может предложить по результатам рассмотрения заявки.
+  </p>
+  <div class="sources">
+    {% for r in rows %}
+    <a href="{{ r.bank.source_url }}" target="_blank" rel="noopener">{{ r.bank.name }} ↗</a>
+    {% endfor %}
+  </div>
+  <div class="colophon">
+    Сгенерировано {{ published_at.strftime('%d.%m.%Y в %H:%M') }} · данные от {{ generated_at.strftime('%d.%m.%Y') }}
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Тема: системная по умолчанию, ручной выбор запоминается.
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) {}
+  var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', saved || (sysDark ? 'dark' : 'light'));
+
+  document.getElementById('theme').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+
+  // Появление блоков при скролле + подсветка активного пункта навигации.
+  var rise = document.querySelectorAll('.rise');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    rise.forEach(function (el) { io.observe(el); });
+
+    var links = [].slice.call(document.querySelectorAll('.nav-links a'));
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) {
+          a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function (s) { spy.observe(s); });
+  } else {
+    rise.forEach(function (el) { el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
