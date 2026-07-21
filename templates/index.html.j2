@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Эквайринг и СБП — акции банков · {{ today|ru_date }}</title>
-<meta name="description" content="Сводка действующих акций по торговому эквайрингу и СБП: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<title>Специальные предложения банков по эквайрингу · {{ today|ru_date }}</title>
+<meta name="description" content="Действующие спецпредложения по торговому эквайрингу и СБП: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
 <style>
 /* ─────────────────────────────────────────────────────────────
    Финансовый бюллетень: бумага, чернила, табличные цифры.
@@ -156,34 +156,6 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
   font-family: var(--sans); font-size: .8rem; color: var(--ink-faint);
   margin-left: auto; text-align: right; max-width: 30ch;
 }
-
-/* ── инсайты ───────────────────────────────────────────────── */
-/* auto-fit, а не фиксированные 4 колонки: выводов может оказаться меньше,
-   и жёсткая сетка оставляла бы пустую ячейку. */
-.insights {
-  display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-}
-.insight {
-  background: var(--paper-2); padding: 1.5rem 1.3rem 1.4rem;
-  position: relative; transition: background .25s;
-}
-.insight:hover { background: var(--paper); }
-.insight::before {
-  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
-  background: var(--bar-vis); opacity: .85;
-}
-.insight .k {
-  font-family: var(--mono); font-size: .63rem; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--ink-faint); margin-bottom: .9rem;
-}
-.insight .v {
-  font-family: var(--mono); font-size: clamp(1.75rem, 4vw, 2.3rem);
-  font-variant-numeric: tabular-nums; letter-spacing: -.03em;
-  line-height: 1; margin-bottom: .6rem; color: var(--ink);
-}
-.insight .t { font-weight: 600; margin-bottom: .35rem; line-height: 1.3; }
-.insight .b { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); line-height: 1.45; }
 
 /* ── карточки банков ───────────────────────────────────────── */
 /* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
@@ -339,7 +311,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
   <div class="wrap nav-in">
     <span class="nav-mark">Эквайринг&nbsp;/&nbsp;СБП</span>
     <div class="nav-links">
-      <a href="#insights">Выводы</a>
       <a href="#banks">Банки</a>
       <a href="#table">Сравнение</a>
       <a href="#sbp">СБП</a>
@@ -352,7 +323,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <header class="wrap masthead">
   <div class="kicker">Обзор рынка · {{ rows|length }} {{ plural(rows|length, 'банк', 'банка', 'банков') }}</div>
-  <h1>Акции по эквайрингу<br>и <em>СБП</em></h1>
+  <h1>Специальные предложения<br>банков по <em>эквайрингу</em></h1>
   <p class="lede">
     Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
     дедлайны и условия по Системе быстрых платежей.
@@ -366,29 +337,9 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <main>
 
-<section id="insights" class="wrap">
-  <div class="head">
-    <span class="num">01</span>
-    <h2>Ключевые выводы</h2>
-    <span class="note">Пересчитывается из данных при каждом обновлении</span>
-  </div>
-  <div class="insights rise">
-    {% for i in insights %}
-    <div class="insight" style="--bar: {{ i.color }}">
-      <div class="k">{{ i.kicker }}</div>
-      <div class="v">{{ i.value }}</div>
-      <div class="t">{{ i.title }}</div>
-      <div class="b">{{ i.body }}</div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-
-<hr class="rule">
-
 <section id="banks" class="wrap">
   <div class="head">
-    <span class="num">02</span>
+    <span class="num">01</span>
     <h2>Предложения банков</h2>
     <span class="note">Зелёным отмечена лучшая ставка на рынке</span>
   </div>
@@ -456,7 +407,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <section id="table" class="wrap">
   <div class="head">
-    <span class="num">03</span>
+    <span class="num">02</span>
     <h2>Сводное сравнение</h2>
     <span class="note">Прокрутите таблицу вбок на узком экране</span>
   </div>
@@ -523,7 +474,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <section id="sbp" class="wrap">
   <div class="head">
-    <span class="num">04</span>
+    <span class="num">03</span>
     <h2>Система быстрых платежей</h2>
     <span class="note">Длина полосы — размер комиссии, короче лучше</span>
   </div>

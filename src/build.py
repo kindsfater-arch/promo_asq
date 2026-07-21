@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Сборка дашборда: data/banks.json + шаблон -> docs/index.html.
 
-HTML никогда не правится руками. Всё, что видно на странице, приезжает
-отсюда, поэтому автообновление данных не расходится с текстом выводов.
+HTML никогда не правится руками: всё, что видно на странице, приезжает
+из data/banks.json через шаблон.
 """
 
 from __future__ import annotations
@@ -24,12 +24,6 @@ DATA_FILE = ROOT / "data" / "banks.json"
 TEMPLATE_DIR = ROOT / "templates"
 OUT_FILE = ROOT / "docs" / "index.html"
 
-MONTHS_GEN = [
-    "января", "февраля", "марта", "апреля", "мая", "июня",
-    "июля", "августа", "сентября", "октября", "ноября", "декабря",
-]
-
-
 # --- форматирование -------------------------------------------------------
 
 def pct(value: Optional[float]) -> str:
@@ -45,10 +39,6 @@ def ru_date(d: Optional[date]) -> str:
     return f"{d.day:02d}.{d.month:02d}.{d.year}" if d else "—"
 
 
-def ru_date_long(d: Optional[date]) -> str:
-    return f"{d.day} {MONTHS_GEN[d.month - 1]} {d.year}" if d else "—"
-
-
 def plural(n: int, one: str, few: str, many: str) -> str:
     if 11 <= n % 100 <= 14:
         return many
@@ -60,89 +50,7 @@ def plural(n: int, one: str, few: str, many: str) -> str:
     return many
 
 
-# --- вычисляемые выводы ---------------------------------------------------
-
-def build_insights(banks: List[Bank], today: date) -> List[dict]:
-    """Ключевые выводы считаются из данных, а не пишутся в шаблоне.
-
-    Иначе после первого же автообновления фраза «самая агрессивная акция —
-    ВТБ, 0%» переживёт саму акцию и разойдётся с таблицей ниже.
-    """
-    insights: List[dict] = []
-
-    rated = [b for b in banks if b.best_rate is not None]
-    if rated:
-        top = min(rated, key=lambda b: b.best_rate)
-        promo = next(
-            (p for p in top.active_promos if p.rate == top.best_rate), None
-        )
-        insights.append({
-            "kicker": "Минимальная ставка",
-            "value": pct(top.best_rate),
-            "title": top.name,
-            "body": (promo.rate_note if promo and promo.rate_note
-                     else top.base_rate_note or "базовый тариф"),
-            "color": top.color,
-        })
-
-    # Ближайший дедлайн среди действующих акций — то, что реально горит.
-    deadlines = [
-        (p.valid_until, b, p)
-        for b in banks for p in b.active_promos
-        if p.valid_until is not None
-    ]
-    if deadlines:
-        until, bank, promo = min(deadlines, key=lambda x: x[0])
-        days = (until - today).days
-        insights.append({
-            "kicker": "Ближайший дедлайн",
-            "value": f"{days} {plural(days, 'день', 'дня', 'дней')}",
-            "title": f"{bank.name} — {promo.title}",
-            "body": f"Условия действуют до {ru_date_long(until)}",
-            "color": bank.color,
-        })
-
-    sbp_banks = [b for b in banks if b.min_sbp_rate is not None]
-    if sbp_banks and rated:
-        cheapest_sbp = min(sbp_banks, key=lambda b: b.min_sbp_rate)
-        base_rates = [b.base_rate_from for b in banks if b.base_rate_from is not None]
-        insights.append({
-            "kicker": "СБП против эквайринга",
-            "value": f"{pct(cheapest_sbp.min_sbp_rate)} … {pct(max(b.max_sbp_rate for b in sbp_banks))}",
-            "title": "СБП дешевле везде",
-            "body": (
-                f"Против {pct(min(base_rates))} … {pct(max(base_rates))} "
-                f"по классическому эквайрингу"
-            ),
-            "color": cheapest_sbp.color,
-        })
-
-    no_vat = [b for b in banks if b.sbp_vat_free is True]
-    if no_vat:
-        insights.append({
-            "kicker": "НДС на комиссию",
-            "value": f"{len(no_vat)} из {len(banks)}",
-            "title": "не начисляют НДС на СБП",
-            "body": ", ".join(b.name for b in no_vat)
-                    + ". У остальных комиссия по СБП облагается НДС по общим правилам.",
-            "color": no_vat[0].color,
-        })
-    else:
-        # Без этой ветки при отсутствии освобождённых банков в сетке
-        # остаётся пустая ячейка.
-        new_client = [b for b in banks
-                      if any(p.audience for p in b.active_promos)]
-        if new_client:
-            insights.append({
-                "kicker": "Промо новым клиентам",
-                "value": f"{len(new_client)} из {len(banks)}",
-                "title": "банков дают стартовые условия",
-                "body": ", ".join(b.name for b in new_client),
-                "color": new_client[0].color,
-            })
-
-    return insights[:4]
-
+# --- подготовка строк для шаблона ------------------------------------------
 
 def annotate(banks: List[Bank], today: date) -> List[dict]:
     """Плоские записи для шаблона + флаги подсветки лучших значений."""
@@ -191,13 +99,11 @@ def main() -> int:
     )
     env.filters["pct"] = pct
     env.filters["ru_date"] = ru_date
-    env.filters["ru_date_long"] = ru_date_long
     # «6 банка» в шапке резало глаз — склоняем по числу.
     env.globals["plural"] = plural
 
     html = env.get_template("index.html.j2").render(
         rows=annotate(dataset.banks, today),
-        insights=build_insights(dataset.banks, today),
         generated_at=dataset.generated_at,
         published_at=datetime.now(),
         today=today,
