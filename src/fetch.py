@@ -35,6 +35,7 @@ UA = (
 # Т-Банк просит Crawl-delay: 2.0 в robots.txt — соблюдаем для всех.
 POLITE_DELAY = 2.0
 NAV_TIMEOUT = 60_000
+SETTLE_MS = 5_000   # пауза после networkidle на дорисовку главного экрана
 MAX_CHARS = 40_000
 ATTEMPTS = 3
 
@@ -44,10 +45,16 @@ CHALLENGE_MARKERS = ("js-challenge", "servicepipe", "captcha_frame")
 # Ключевые слова тематики: если их нет, страница почти наверняка не та.
 TOPIC_MARKERS = ("эквайринг", "сбп", "комисс", "тариф", "платеж")
 
-# Текст выдирается из DOM: скрипты, стили, навигация и футер только шумят.
+# Из DOM вырезаем только то, что заведомо не несёт текста.
+#
+# ВАЖНО: header/nav/footer здесь НЕ трогаем, хотя соблазн велик. Сбер
+# держит главный оффер («Ставка от 0,3% со счётом для бизнеса») внутри
+# <header>, и вместе с меню вырезалась сама ключевая цифра — модель
+# видела только 1% из юридической сноски внизу страницы. Лишние пункты
+# меню в тексте дешевле, чем потерянная ставка.
 EXTRACT_JS = """
 () => {
-  const drop = 'script,style,noscript,svg,iframe,template,header,footer,nav,' +
+  const drop = 'script,style,noscript,svg,iframe,template,' +
                '[class*="cookie"],[class*="Cookie"],[id*="cookie"]';
   const doc = document.body.cloneNode(true);
   doc.querySelectorAll(drop).forEach(el => el.remove());
@@ -98,7 +105,16 @@ def fetch_one(page, name: str, url: str) -> str:
                 )
             except PWTimeout:
                 pass
-            page.wait_for_timeout(1500)
+            # Порог в 2000 символов набирается быстро — меню и подвал
+            # приезжают первыми. Главный экран с ключевой ставкой у Сбера
+            # дорисовывается заметно позже, поэтому ждём затишья в сети
+            # и добавляем паузу: без неё в снимок попадал только 1% из
+            # юридической сноски, а «Ставка от 0,3%» терялась.
+            try:
+                page.wait_for_load_state("networkidle", timeout=20_000)
+            except PWTimeout:
+                pass
+            page.wait_for_timeout(SETTLE_MS)
             text = clean(page.evaluate(EXTRACT_JS))
             problem = looks_broken(text)
             if not problem:
