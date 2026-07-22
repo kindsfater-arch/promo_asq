@@ -1,0 +1,81 @@
+name: Обновление данных
+
+on:
+  schedule:
+    # 03:00 UTC = 06:00 МСК. GitHub запускает cron с задержкой до получаса,
+    # иногда пропускает прогон — для суточного обновления это неважно.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+# Боту нужно право коммитить обновлённые данные обратно в main.
+# Кроме этого в репозитории ничего включать не требуется: Pages настроен
+# на ветку и пересоберётся сам, как только придёт коммит.
+permissions:
+  contents: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Установка зависимостей
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      # Частичный сбой не фатален: банк без свежего снимка получит статус
+      # stale и сохранит прошлые данные. Решение принимает шаг приёмки.
+      - name: Сбор страниц банков
+        run: python src/fetch.py
+        continue-on-error: true
+
+      - name: Извлечение условий
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python src/extract.py
+        continue-on-error: true
+
+      # Единственный шаг, который может остановить публикацию: если
+      # развалилось больше двух банков из шести, он падает, и дальше
+      # ни сборки, ни коммита не будет — сайт останется прежним.
+      - name: Проверка и приёмка данных
+        run: python src/validate.py
+
+      - name: Сборка страницы
+        run: python src/build.py
+
+      # Снимки страниц — единственный способ понять постфактум, что
+      # реально было на сайте банка в момент прогона.
+      - name: Снимки для разбора
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshots-${{ github.run_number }}
+          path: data/snapshots/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Публикация
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/banks.json docs/index.html
+          if git diff --staged --quiet; then
+            echo "Изменений нет — коммит пропущен"
+          else
+            git commit -m "Данные банков на $(date +%d.%m.%Y)"
+            git push
+            echo "Запушено. Pages пересоберёт сайт за 1-2 минуты."
+          fi
