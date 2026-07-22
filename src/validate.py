@@ -117,17 +117,6 @@ def clean_bank(bank_id: str, data: Dict, snapshot: str, today: date,
         promos.append(p)
     out["promos"] = promos
 
-    sbp = []
-    for s in out.get("sbp_rates") or []:
-        if not valid_rate(s.get("rate")):
-            rep.drop(bank_id, f"ставка СБП {s.get('rate')}", "вне диапазона")
-            continue
-        if not quote_ok(s.get("source_quote"), hay):
-            rep.drop(bank_id, f"цитата СБП «{s.get('segment')}»", "не найдена")
-            s["source_quote"] = None
-        sbp.append(s)
-    out["sbp_rates"] = sbp
-
     return out
 
 
@@ -136,8 +125,6 @@ def has_substance(data: Dict) -> bool:
     return bool(
         data.get("base_rate_from") is not None
         or data.get("promos")
-        or data.get("sbp_rates")
-        or data.get("sbp_note")
     )
 
 

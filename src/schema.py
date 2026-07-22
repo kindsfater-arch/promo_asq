@@ -1,7 +1,11 @@
-"""Модель данных по акциям эквайринга и СБП.
+"""Модель данных по спецпредложениям банков в торговом эквайринге.
 
 Единственный источник правды о форме данных: этой схемой пользуются
 extract.py (как response_schema для Gemini), validate.py и build.py.
+
+Ставки СБП сознательно не собираются: на отслеживаемых страницах их нет,
+они живут на отдельных страницах банков. Обещать в интерфейсе то, чего
+нет в источнике, хуже, чем не показывать вовсе.
 
 Совместимо с Python 3.9 (системный питон на маке) и 3.12 (раннер Actions).
 """
@@ -20,6 +24,10 @@ RATE_MIN = 0.0
 RATE_MAX = 5.0
 
 STATUSES = ("seed", "ok", "stale", "failed")
+
+# Ставка по QR-оплате несопоставима со ставкой эквайринга — она кратно
+# ниже. Акции с этими словами не участвуют в расчёте лучшей ставки.
+QR_MARKERS = ("qr", "куар", "сбп", "быстрых платеж")
 
 
 class Promo(BaseModel):
@@ -45,14 +53,15 @@ class Promo(BaseModel):
         False, description="Акция уже завершилась — показывать только в примечаниях"
     )
 
+    @property
+    def is_qr_payment(self) -> bool:
+        """Акция целиком про оплату по QR, а не про эквайринг.
 
-class SbpRate(BaseModel):
-    """Ставка СБП для конкретного сегмента бизнеса."""
-
-    segment: str = Field(description="'ЖКХ', 'товары повседневного спроса', 'остальные'")
-    rate: Optional[float] = None
-    note: Optional[str] = None
-    source_quote: Optional[str] = None
+        Смотрим только название. Условия трогать нельзя: у Сбера в акции
+        «Сниженная комиссия для новых клиентов» SberPay QR упомянут как
+        один из каналов, но сама акция — эквайринговая, со ставкой 1%.
+        """
+        return any(m in self.title.lower() for m in QR_MARKERS)
 
 
 class Bank(BaseModel):
@@ -71,19 +80,8 @@ class Bank(BaseModel):
 
     promos: List[Promo] = Field(default_factory=list)
 
-    sbp_rates: List[SbpRate] = Field(default_factory=list)
-    sbp_note: Optional[str] = None
-
     vat_note: Optional[str] = Field(
         None, description="Как обстоит дело с НДС на комиссию"
-    )
-    sbp_vat_free: Optional[bool] = Field(
-        None,
-        description=(
-            "true — банк прямо заявляет, что НДС на комиссию по СБП не начисляется; "
-            "false — начисляется; null — на странице не раскрыто. "
-            "Отдельное поле, а не разбор vat_note: формулировки у банков разные."
-        ),
     )
     extras: List[str] = Field(
         default_factory=list, description="Доп. сервисы и неценовые плюшки"
@@ -113,21 +111,20 @@ class Bank(BaseModel):
 
     @property
     def best_rate(self) -> Optional[float]:
-        """Лучшая ставка, которую клиент реально может получить сегодня."""
-        candidates = [p.rate for p in self.active_promos if p.rate is not None]
+        """Лучшая ставка эквайринга, доступная клиенту сегодня.
+
+        Акции про оплату по QR и СБП сюда не входят. Иначе получается
+        подлог: у БСПБ предложение «приём по QR — комиссия от 0%»
+        выдавало best_rate = 0%, и карточка обещала бесплатный
+        эквайринг при реальной базовой ставке 0,9%.
+        """
+        candidates = [
+            p.rate for p in self.active_promos
+            if p.rate is not None and not p.is_qr_payment
+        ]
         if self.base_rate_from is not None:
             candidates.append(self.base_rate_from)
         return min(candidates) if candidates else None
-
-    @property
-    def min_sbp_rate(self) -> Optional[float]:
-        rates = [s.rate for s in self.sbp_rates if s.rate is not None]
-        return min(rates) if rates else None
-
-    @property
-    def max_sbp_rate(self) -> Optional[float]:
-        rates = [s.rate for s in self.sbp_rates if s.rate is not None]
-        return max(rates) if rates else None
 
 
 class Dataset(BaseModel):

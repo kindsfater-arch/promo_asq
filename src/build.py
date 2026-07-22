@@ -55,9 +55,7 @@ def plural(n: int, one: str, few: str, many: str) -> str:
 def annotate(banks: List[Bank], today: date) -> List[dict]:
     """Плоские записи для шаблона + флаги подсветки лучших значений."""
     rates = [b.best_rate for b in banks if b.best_rate is not None]
-    sbps = [b.min_sbp_rate for b in banks if b.min_sbp_rate is not None]
     best_rate = min(rates) if rates else None
-    best_sbp = min(sbps) if sbps else None
 
     rows = []
     for b in banks:
@@ -73,11 +71,6 @@ def annotate(banks: List[Bank], today: date) -> List[dict]:
             "deadline": nearest,
             "days_left": (nearest - today).days if nearest else None,
             "is_best_rate": b.best_rate is not None and b.best_rate == best_rate,
-            "is_best_sbp": b.min_sbp_rate is not None and b.min_sbp_rate == best_sbp,
-            "sbp_range": (
-                pct(b.min_sbp_rate) if b.min_sbp_rate == b.max_sbp_rate
-                else f"{pct(b.min_sbp_rate)} … {pct(b.max_sbp_rate)}"
-            ) if b.min_sbp_rate is not None else "—",
         })
     return rows
 

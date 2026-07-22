@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Специальные предложения банков по эквайрингу · {{ today|ru_date }}</title>
-<meta name="description" content="Действующие спецпредложения по торговому эквайрингу и СБП: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
 <style>
 /* ─────────────────────────────────────────────────────────────
    Финансовый бюллетень: бумага, чернила, табличные цифры.
@@ -159,7 +159,9 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
 
 /* ── карточки банков ───────────────────────────────────────── */
 /* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
-.banks { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+/* align-items: start — иначе карточки тянутся по высоте самой длинной
+   в ряду, и у банков с коротким описанием зияет пустота в полэкрана. */
+.banks { display: grid; gap: 1.25rem; align-items: start; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 760px)  { .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1120px) { .banks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .bank {
@@ -243,31 +245,6 @@ td .num-cell { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 td .best { color: var(--good); font-weight: 700; }
 td .sub { display: block; font-family: var(--sans); font-size: .76rem; color: var(--ink-faint); margin-top: .2rem; }
 
-/* ── СБП ───────────────────────────────────────────────────── */
-.sbp { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
-.sbp-row {
-  background: var(--paper-2); padding: 1.1rem 1.3rem;
-  display: grid; gap: .3rem 1.2rem; align-items: center;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 720px) { .sbp-row { grid-template-columns: 13rem 1fr 6rem; } }
-.sbp-row .who { font-weight: 600; }
-.sbp-row .who small { display: block; font-family: var(--sans); font-size: .74rem; color: var(--ink-faint); font-weight: 400; }
-.bars { display: flex; flex-direction: column; gap: .3rem; }
-.bar-line { display: flex; align-items: center; gap: .6rem; }
-.bar-track { flex: 1; height: 7px; background: var(--rule-soft); position: relative; overflow: hidden; }
-.bar-fill {
-  height: 100%; background: var(--bar-vis); width: var(--w);
-  transform-origin: left; animation: grow .9s cubic-bezier(.2,.8,.3,1) both;
-}
-@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.bar-line .seg { font-family: var(--sans); font-size: .74rem; color: var(--ink-soft); min-width: 11rem; }
-.bar-line .val { font-family: var(--mono); font-size: .82rem; font-variant-numeric: tabular-nums; min-width: 3rem; text-align: right; }
-.sbp-row .vat { font-family: var(--sans); font-size: .75rem; text-align: left; }
-@media (min-width: 720px) { .sbp-row .vat { text-align: right; } }
-.vat.no { color: var(--good); font-weight: 600; }
-.sbp-row .none { font-family: var(--sans); font-size: .82rem; color: var(--ink-faint); font-style: italic; }
-
 /* ── прочее ────────────────────────────────────────────────── */
 .notes {
   margin-top: 2rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule);
@@ -309,11 +286,10 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <nav class="nav">
   <div class="wrap nav-in">
-    <span class="nav-mark">Эквайринг&nbsp;/&nbsp;СБП</span>
+    <span class="nav-mark">Торговый&nbsp;эквайринг</span>
     <div class="nav-links">
       <a href="#banks">Банки</a>
       <a href="#table">Сравнение</a>
-      <a href="#sbp">СБП</a>
     </div>
     <button class="theme" id="theme" type="button" aria-label="Переключить тему">
       <span class="moon" aria-hidden="true">◑</span><span class="sun" aria-hidden="true">◐</span>
@@ -326,7 +302,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
   <h1>Специальные предложения<br>банков по <em>эквайрингу</em></h1>
   <p class="lede">
     Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
-    дедлайны и условия по Системе быстрых платежей.
+    дедлайны и условия подключения.
   </p>
   <div class="meta">
     <span>Актуально на <b>{{ today|ru_date }}</b></span>
@@ -359,7 +335,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
         {% if r.active %}<span class="tag hot">🔥 {{ r.active|length }} {{ plural(r.active|length, 'акция', 'акции', 'акций') }}</span>{% endif %}
         {% if r.deadline %}<span class="tag hot">⏰ до {{ r.deadline|ru_date }}</span>{% endif %}
         {% if r.headline and r.headline.audience %}<span class="tag">🆕 {{ r.headline.audience|truncate(32, true, '…') }}</span>{% endif %}
-        {% if r.is_best_sbp %}<span class="tag win">★ лучшая СБП</span>{% endif %}
         {% if b.status == 'stale' %}<span class="tag">⚠️ данные от {{ b.checked_at|ru_date }}</span>{% endif %}
       </div>
 
@@ -384,7 +359,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       {% endif %}
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono {{ 'best' if r.is_best_sbp }}">{{ r.sbp_range }}</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">{{ b.base_rate_from|pct }}</span></dd>
         {% if r.days_left is not none %}
         <dt>До конца акции</dt><dd><span class="mono">{{ r.days_left }} дн.</span></dd>
@@ -419,7 +393,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           <th>Главное предложение</th>
           <th>Ставка</th>
           <th>Срок</th>
-          <th>СБП</th>
           <th>НДС</th>
         </tr>
       </thead>
@@ -439,7 +412,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
               <span class="sub">{{ r.days_left }} дн.</span>
             {% else %}<span class="sub">бессрочно</span>{% endif %}
           </td>
-          <td><span class="num-cell {{ 'best' if r.is_best_sbp }}">{{ r.sbp_range }}</span></td>
           <td>
             {% if b.vat_note %}<span class="sub" style="margin-top:0">{{ b.vat_note }}</span>
             {% else %}—{% endif %}
@@ -468,45 +440,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
     </ul>
   </div>
   {% endif %}
-</section>
-
-<hr class="rule">
-
-<section id="sbp" class="wrap">
-  <div class="head">
-    <span class="num">03</span>
-    <h2>Система быстрых платежей</h2>
-    <span class="note">Длина полосы — размер комиссии, короче лучше</span>
-  </div>
-  <div class="sbp rise">
-    {% for r in rows %}
-    {% set b = r.bank %}
-    <div class="sbp-row" style="--bar: {{ b.color }}">
-      <div class="who">
-        {{ b.name }}
-        <small>{{ b.sbp_note|truncate(70) if b.sbp_note else '' }}</small>
-      </div>
-      {% if b.sbp_rates %}
-      <div class="bars">
-        {% for s in b.sbp_rates %}
-        <div class="bar-line">
-          <span class="seg">{{ s.segment }}</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: {{ ((s.rate or 0) / 0.7 * 100)|round(1) }}%"></span></span>
-          <span class="val">{{ s.rate|pct }}</span>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="none">Ставки на странице банка не опубликованы</div>
-      {% endif %}
-      <div class="vat {{ 'no' if b.sbp_vat_free }}">
-        {% if b.sbp_vat_free %}НДС не начисляется
-        {% elif b.sbp_vat_free is none %}НДС не раскрыт
-        {% else %}НДС по общим правилам{% endif %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
 </section>
 
 </main>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Специальные предложения банков по эквайрингу · 22.07.2026</title>
-<meta name="description" content="Действующие спецпредложения по торговому эквайрингу и СБП: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
 <style>
 /* ─────────────────────────────────────────────────────────────
    Финансовый бюллетень: бумага, чернила, табличные цифры.
@@ -159,7 +159,9 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
 
 /* ── карточки банков ───────────────────────────────────────── */
 /* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
-.banks { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+/* align-items: start — иначе карточки тянутся по высоте самой длинной
+   в ряду, и у банков с коротким описанием зияет пустота в полэкрана. */
+.banks { display: grid; gap: 1.25rem; align-items: start; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 760px)  { .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1120px) { .banks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .bank {
@@ -243,31 +245,6 @@ td .num-cell { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 td .best { color: var(--good); font-weight: 700; }
 td .sub { display: block; font-family: var(--sans); font-size: .76rem; color: var(--ink-faint); margin-top: .2rem; }
 
-/* ── СБП ───────────────────────────────────────────────────── */
-.sbp { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
-.sbp-row {
-  background: var(--paper-2); padding: 1.1rem 1.3rem;
-  display: grid; gap: .3rem 1.2rem; align-items: center;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 720px) { .sbp-row { grid-template-columns: 13rem 1fr 6rem; } }
-.sbp-row .who { font-weight: 600; }
-.sbp-row .who small { display: block; font-family: var(--sans); font-size: .74rem; color: var(--ink-faint); font-weight: 400; }
-.bars { display: flex; flex-direction: column; gap: .3rem; }
-.bar-line { display: flex; align-items: center; gap: .6rem; }
-.bar-track { flex: 1; height: 7px; background: var(--rule-soft); position: relative; overflow: hidden; }
-.bar-fill {
-  height: 100%; background: var(--bar-vis); width: var(--w);
-  transform-origin: left; animation: grow .9s cubic-bezier(.2,.8,.3,1) both;
-}
-@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.bar-line .seg { font-family: var(--sans); font-size: .74rem; color: var(--ink-soft); min-width: 11rem; }
-.bar-line .val { font-family: var(--mono); font-size: .82rem; font-variant-numeric: tabular-nums; min-width: 3rem; text-align: right; }
-.sbp-row .vat { font-family: var(--sans); font-size: .75rem; text-align: left; }
-@media (min-width: 720px) { .sbp-row .vat { text-align: right; } }
-.vat.no { color: var(--good); font-weight: 600; }
-.sbp-row .none { font-family: var(--sans); font-size: .82rem; color: var(--ink-faint); font-style: italic; }
-
 /* ── прочее ────────────────────────────────────────────────── */
 .notes {
   margin-top: 2rem; padding: 1.3rem 1.5rem; border: 1px solid var(--rule);
@@ -309,11 +286,10 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <nav class="nav">
   <div class="wrap nav-in">
-    <span class="nav-mark">Эквайринг&nbsp;/&nbsp;СБП</span>
+    <span class="nav-mark">Торговый&nbsp;эквайринг</span>
     <div class="nav-links">
       <a href="#banks">Банки</a>
       <a href="#table">Сравнение</a>
-      <a href="#sbp">СБП</a>
     </div>
     <button class="theme" id="theme" type="button" aria-label="Переключить тему">
       <span class="moon" aria-hidden="true">◑</span><span class="sun" aria-hidden="true">◐</span>
@@ -326,12 +302,12 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
   <h1>Специальные предложения<br>банков по <em>эквайрингу</em></h1>
   <p class="lede">
     Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
-    дедлайны и условия по Системе быстрых платежей.
+    дедлайны и условия подключения.
   </p>
   <div class="meta">
     <span>Актуально на <b>22.07.2026</b></span>
     <span>Источники: <b>6 официальных сайтов</b></span>
-    <span>Обновлено <b class="mono">22.07.2026 05:27</b></span>
+    <span>Обновлено <b class="mono">22.07.2026 07:40</b></span>
   </div>
 </header>
 
@@ -367,7 +343,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </ul>
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono ">—</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">—</span></dd>
         <dt>До конца акции</dt><dd><span class="mono">40 дн.</span></dd>
       </dl>
@@ -386,7 +361,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </div>
 
       <div class="tags">
-<span class="tag hot">🔥 1 акция</span><span class="tag win">★ лучшая СБП</span>      </div>
+<span class="tag hot">🔥 1 акция</span>      </div>
 
       <div class="promo-title">Льготный тариф на 6 месяцев</div>
 <div class="promo-note">Действует 6 месяцев</div>      <ul class="cond">
@@ -394,7 +369,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono best">0% … 0,7%</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">1%</span></dd>
       </dl>
 
@@ -420,14 +394,13 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono ">—</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">—</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Личный бизнес-ассистент, поддержка 24/7</li><li>Бесплатная доставка и настройка терминала, обучение персонала</li>      </ul>
 
-<div class="flag">Явных временных ставок по эквайрингу и условий СБП на странице не выявлено — тарифы индивидуальны, сравнение ориентировочное.</div>    </article>
+    </article>
     <article class="bank rise" style="--bar: #0A2896">
       <h3>ВТБ</h3>
       <a class="url" href="https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/" target="_blank" rel="noopener">https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/</a>
@@ -446,7 +419,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono ">—</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">1,9%</span></dd>
         <dt>До конца акции</dt><dd><span class="mono">40 дн.</span></dd>
       </dl>
@@ -454,7 +426,7 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Бесплатная установка и настройка оборудования</li><li>Бесплатная аренда терминала</li><li>Зачисление выручки до 4 раз в день</li>      </ul>
 
-<div class="flag">На странице отсутствует информация о тарифах на СБП.</div>    </article>
+<div class="flag">Базовая ставка 'от 1,9%' указана в разделе 'Тарифы' как ставка после завершения акции или при превышении лимита.</div>    </article>
     <article class="bank rise" style="--bar: #FFDD2D">
       <h3>Т-Банк</h3>
       <a class="url" href="https://www.tbank.ru/business/payments/" target="_blank" rel="noopener">https://www.tbank.ru/business/payments/</a>
@@ -476,7 +448,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </ul>
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono ">0,2%</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">1,2%</span></dd>
       </dl>
 
@@ -489,23 +460,19 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       <a class="url" href="https://www.bspb.ru/business/acquiring/merchant" target="_blank" rel="noopener">https://www.bspb.ru/business/acquiring/merchant</a>
 
       <div class="rate-box">
-        <span class="rate mono win">0%</span>
-        <span class="rate-cap">лучшая ставка</span>
+        <span class="rate mono ">0,9%</span>
+        <span class="rate-cap">от</span>
       </div>
 
       <div class="tags">
-<span class="tag hot">🔥 2 акции</span>      </div>
+<span class="tag hot">🔥 1 акция</span>      </div>
 
       <div class="promo-title">Торговый эквайринг без аренды терминала</div>
 <div class="promo-note">от 0.9% (без аренды терминала Банка)</div>      <ul class="cond">
 <li>без аренды терминала Банка</li>      </ul>
 
-      <ul class="cond">
-        <li><b>Прием платежей по QR-коду</b> — от 0%</li>
-      </ul>
 
       <dl class="kv">
-        <dt>СБП</dt><dd><span class="mono ">—</span></dd>
         <dt>Базовая ставка</dt><dd><span class="mono">0,9%</span></dd>
       </dl>
 
@@ -532,7 +499,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           <th>Главное предложение</th>
           <th>Ставка</th>
           <th>Срок</th>
-          <th>СБП</th>
           <th>НДС</th>
         </tr>
       </thead>
@@ -547,7 +513,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 <span class="num-cell">до 31.08.2026</span>
               <span class="sub">40 дн.</span>
           </td>
-          <td><span class="num-cell ">—</span></td>
           <td>
 <span class="sub" style="margin-top:0">Компенсация 50% от начисленного НДС за торговый эквайринг при соблюдении условий по обороту и налоговому статусу.</span>
           </td>
@@ -560,7 +525,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           <td><span class="num-cell ">1%</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
-          <td><span class="num-cell best">0% … 0,7%</span></td>
           <td>
 —          </td>
         </tr>
@@ -572,7 +536,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           <td><span class="num-cell ">—</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
-          <td><span class="num-cell ">—</span></td>
           <td>
 —          </td>
         </tr>
@@ -586,7 +549,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 <span class="num-cell">до 31.08.2026</span>
               <span class="sub">40 дн.</span>
           </td>
-          <td><span class="num-cell ">—</span></td>
           <td>
 —          </td>
         </tr>
@@ -598,7 +560,6 @@ Pay to phone — сниженная комиссия
           <td><span class="num-cell ">1%</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
-          <td><span class="num-cell ">0,2%</span></td>
           <td>
 <span class="sub" style="margin-top:0">НДС 22% начисляется на комиссию за эквайринг с 1 января 2026 года, на T-Pay и СБП — нет</span>
           </td>
@@ -608,10 +569,9 @@ Pay to phone — сниженная комиссия
           <td>
 Торговый эквайринг без аренды терминала
 <span class="sub">от 0.9% (без аренды терминала Банка)</span>          </td>
-          <td><span class="num-cell best">0%</span></td>
+          <td><span class="num-cell ">0,9%</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
-          <td><span class="num-cell ">—</span></td>
           <td>
 —          </td>
         </tr>
@@ -623,113 +583,11 @@ Pay to phone — сниженная комиссия
     <h4>Оговорки и расхождения</h4>
     <ul>
         <li><b>Сбербанк:</b> На странице не указаны стандартные базовые ставки эквайринга вне акций.</li>
-        <li><b>Сбербанк:</b> Система быстрых платежей (СБП) на странице не упоминается, вместо неё предлагается SberPay QR.</li>
         <li><b>Альфа-Банк:</b> Упоминается льготный тариф на 6 месяцев, но конкретная сниженная ставка для него на странице не указана.</li>
-        <li><b>Газпромбанк:</b> Явных временных ставок по эквайрингу и условий СБП на странице не выявлено — тарифы индивидуальны, сравнение ориентировочное.</li>
-        <li><b>ВТБ:</b> На странице отсутствует информация о тарифах на СБП.</li>
         <li><b>ВТБ:</b> Базовая ставка 'от 1,9%' указана в разделе 'Тарифы' как ставка после завершения акции или при превышении лимита.</li>
         <li><b>Банк Санкт-Петербург:</b> На странице указано, что при обороте меньше 300 тыс ₽ взимается комиссия 1 тыс ₽ на терминал, но не уточняется, является ли это общим правилом или примером из калькулятора.</li>
         <li><b>Банк Санкт-Петербург:</b> Ставка при использовании своего оборудования указана как 'минус 0,1% от базовой комиссии', но базовая комиссия явно не определена.</li>
     </ul>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section id="sbp" class="wrap">
-  <div class="head">
-    <span class="num">03</span>
-    <h2>Система быстрых платежей</h2>
-    <span class="note">Длина полосы — размер комиссии, короче лучше</span>
-  </div>
-  <div class="sbp rise">
-    <div class="sbp-row" style="--bar: #21A038">
-      <div class="who">
-        Сбербанк
-        <small></small>
-      </div>
-      <div class="none">Ставки на странице банка не опубликованы</div>
-      <div class="vat ">
-НДС не раскрыт
-      </div>
-    </div>
-    <div class="sbp-row" style="--bar: #EF3124">
-      <div class="who">
-        Альфа-Банк
-        <small>Комиссия за приём платежей по QR-коду через СБП зависит от вида...</small>
-      </div>
-      <div class="bars">
-        <div class="bar-line">
-          <span class="seg">государственные предприятия</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: 0.0%"></span></span>
-          <span class="val">0%</span>
-        </div>
-        <div class="bar-line">
-          <span class="seg">предприятия, задействованные в сферах ЖКХ, медицины, образования, производства товаров повседневного спроса</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: 57.1%"></span></span>
-          <span class="val">0,4%</span>
-        </div>
-        <div class="bar-line">
-          <span class="seg">все остальные</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: 100.0%"></span></span>
-          <span class="val">0,7%</span>
-        </div>
-      </div>
-      <div class="vat ">
-НДС не раскрыт
-      </div>
-    </div>
-    <div class="sbp-row" style="--bar: #0E4C8B">
-      <div class="who">
-        Газпромбанк
-        <small></small>
-      </div>
-      <div class="none">Ставки на странице банка не опубликованы</div>
-      <div class="vat ">
-НДС не раскрыт
-      </div>
-    </div>
-    <div class="sbp-row" style="--bar: #0A2896">
-      <div class="who">
-        ВТБ
-        <small></small>
-      </div>
-      <div class="none">Ставки на странице банка не опубликованы</div>
-      <div class="vat ">
-НДС не раскрыт
-      </div>
-    </div>
-    <div class="sbp-row" style="--bar: #FFDD2D">
-      <div class="who">
-        Т-Банк
-        <small>Комиссия по СБП — 0,2%, 0,4% или 0,7% в зависимости от вида...</small>
-      </div>
-      <div class="bars">
-        <div class="bar-line">
-          <span class="seg">ЖКХ</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: 28.6%"></span></span>
-          <span class="val">0,2%</span>
-        </div>
-        <div class="bar-line">
-          <span class="seg">прочие виды деятельности</span>
-          <span class="bar-track"><span class="bar-fill" style="--w: 0.0%"></span></span>
-          <span class="val">—</span>
-        </div>
-      </div>
-      <div class="vat no">
-НДС не начисляется
-      </div>
-    </div>
-    <div class="sbp-row" style="--bar: #7B2FBE">
-      <div class="who">
-        Банк Санкт-Петербург
-        <small></small>
-      </div>
-      <div class="none">Ставки на странице банка не опубликованы</div>
-      <div class="vat ">
-НДС не раскрыт
-      </div>
-    </div>
   </div>
 </section>
 
@@ -752,7 +610,7 @@ Pay to phone — сниженная комиссия
     <a href="https://www.bspb.ru/business/acquiring/merchant" target="_blank" rel="noopener">Банк Санкт-Петербург ↗</a>
   </div>
   <div class="colophon">
-    Сгенерировано 22.07.2026 в 05:27 · данные от 22.07.2026
+    Сгенерировано 22.07.2026 в 07:40 · данные от 22.07.2026
   </div>
 </footer>
 
