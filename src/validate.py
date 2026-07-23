@@ -121,10 +121,18 @@ def clean_bank(bank_id: str, data: Dict, snapshot: str, today: date,
 
 
 def has_substance(data: Dict) -> bool:
-    """Пустая скорлупа вместо данных — повод оставить прошлые значения."""
+    """Есть ли в извлечении осмысленное содержание.
+
+    Не требуем именно числовую ставку: ГПБ публикует только индивидуальные
+    тарифы, и по прежнему критерию (ставка ИЛИ акции) он оставался вечно
+    stale, хотя страница прочитана верно. Считаем содержанием и текстовое
+    описание тарифа — оно означает, что модель реально разобрала страницу,
+    а не вернула пустышку после отказа.
+    """
     return bool(
         data.get("base_rate_from") is not None
         or data.get("promos")
+        or (data.get("base_rate_note") or "").strip()
     )
 
 
@@ -156,6 +164,20 @@ def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
         # Идентичность банка наша, содержание — из извлечения.
         merged = dict(prev)
         merged.update(cleaned)
+
+        # Предохранитель от «дребезга» модели: страница банка почти всегда
+        # содержит рекламную ставку, поэтому пустой base_rate_from в новом
+        # прогоне — это промах извлечения, а не отмена ставки банком. Не
+        # даём сбойному прогону затереть уже известную ставку (именно так
+        # у Сбера 0,3% подменялись на 1% из промо-сноски).
+        if (cleaned.get("base_rate_from") is None
+                and prev.get("base_rate_from") is not None):
+            merged["base_rate_from"] = prev["base_rate_from"]
+            merged["base_rate_note"] = prev.get("base_rate_note")
+            merged["base_rate_quote"] = prev.get("base_rate_quote")
+            rep.drop(bank.id, "базовая ставка",
+                     "не извлеклась в этот раз — сохранена прошлая")
+
         merged["checked_at"] = today.isoformat()
         merged["status"] = "ok"
         banks_out.append(merged)
