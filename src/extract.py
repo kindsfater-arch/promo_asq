@@ -11,6 +11,7 @@ CSS-селекторы тут не годятся: банки перекраив
     export GEMINI_API_KEY=...
     python src/extract.py                     # все банки
     python src/extract.py --bank vtb          # один
+    python src/extract.py --stale             # только отставшие
     python src/extract.py --dry-run           # печать JSON без записи
 """
 
@@ -26,10 +27,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
+import selection  # noqa: E402
 from schema import Bank  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_FILE = ROOT / "data" / "banks.json"
 SNAP_DIR = ROOT / "data" / "snapshots"
 
 # Версии зафиксированы намеренно: gemini-flash-latest молча переезжает
@@ -202,9 +203,18 @@ def extract_bank(text: str, name: str, url: str) -> dict:
     raise RuntimeError(f"все модели отказали, последняя ошибка: {last}")
 
 
+def rel(path: Path) -> Path:
+    """Путь покороче для вывода; каталог вне проекта печатаем как есть."""
+    try:
+        return path.resolve().relative_to(ROOT)
+    except ValueError:
+        return path
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--bank", help="id банка; по умолчанию все")
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    selection.add_args(ap)
     ap.add_argument("--snapshots", type=Path, default=None,
                     help="каталог со снимками (по умолчанию сегодняшний)")
     ap.add_argument("--dry-run", action="store_true",
@@ -219,19 +229,24 @@ def main() -> int:
               file=sys.stderr)
         return 2
 
-    banks: List[Dict] = json.loads(DATA_FILE.read_text(encoding="utf-8"))["banks"]
-    if args.bank:
-        banks = [b for b in banks if b["id"] == args.bank]
+    banks: List[Dict] = selection.select(selection.load_banks(), args)
+    if not banks:
+        print("Извлекать нечего: у всех банков свежие данные")
+        return 0
 
     results, missing = {}, []
-    for i, bank in enumerate(banks):
-        if i:
-            time.sleep(PAUSE_BETWEEN_BANKS)
+    called = False
+    for bank in banks:
         snap = snap_dir / f"{bank['id']}.txt"
         if not snap.is_file():
             print(f"  – {bank['id']}: снимка нет, пропуск")
             missing.append(bank["id"])
             continue
+        # Пауза нужна только между обращениями к модели: пропущенные
+        # банки не тратят минутную квоту и ждать после них нечего.
+        if called:
+            time.sleep(PAUSE_BETWEEN_BANKS)
+        called = True
         text = snap.read_text(encoding="utf-8")
         try:
             data = extract_bank(text, bank["name"], bank["source_url"])
@@ -251,8 +266,18 @@ def main() -> int:
         return 0
 
     out = args.out or snap_dir / "extracted.json"
-    out.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n✓ {out.relative_to(ROOT)} — {len(results)} из {len(banks)}")
+    # Точечный прогон дописывает результат к утреннему, а не затирает его:
+    # иначе дообновление одного банка стёрло бы извлечение остальных пяти,
+    # и приёмка сочла бы их развалившимися.
+    merged: Dict[str, Dict] = {}
+    if out.is_file():
+        try:
+            merged = json.loads(out.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            print(f"  (повреждённый {rel(out)} перезаписан)", file=sys.stderr)
+    merged.update(results)
+    out.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n✓ {rel(out)} — {len(results)} из {len(banks)}")
     if missing:
         print(f"Без данных: {', '.join(missing)}", file=sys.stderr)
     return 0

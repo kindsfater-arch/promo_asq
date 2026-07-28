@@ -5,26 +5,34 @@
 но у Альфа-Банка стоит JS-челлендж ServicePipe: без браузера приходит
 полтора килобайта со спиннером. Поэтому браузер один на всех.
 
-    python src/fetch.py                # все банки
-    python src/fetch.py --bank alfa    # один банк
+    python src/fetch.py                    # все банки
+    python src/fetch.py --bank alfa        # один банк
+    python src/fetch.py --banks vtb,tbank  # несколько
+    python src/fetch.py --stale            # только отставшие (см. selection.py)
 """
 
 from __future__ import annotations
 
 import argparse
-import json
+import gzip
+import re
 import sys
 import time
 from datetime import date
+from html import unescape
+from http.client import HTTPException
 from pathlib import Path
-from typing import Dict, List
+from typing import List
+from urllib.request import Request, urlopen
 
 from playwright.sync_api import Error as PWError
 from playwright.sync_api import TimeoutError as PWTimeout
 from playwright.sync_api import sync_playwright
 
+sys.path.insert(0, str(Path(__file__).parent))
+import selection  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
-DATA_FILE = ROOT / "data" / "banks.json"
 SNAP_DIR = ROOT / "data" / "snapshots"
 
 UA = (
@@ -90,6 +98,68 @@ def looks_broken(text: str) -> str:
     return ""
 
 
+# Запасной путь без браузера. ВТБ и Т-Банк периодически рвут соединение
+# с Chromium на раннере GitHub (net::ERR_CONNECTION_CLOSED) — так их
+# защита отвечает на трафик из чужого дата-центра. Обычный HTTPS-запрос
+# из стандартной библиотеки идёт с другим TLS-отпечатком и иногда
+# проходит там, где браузер получает разрыв. Обе страницы серверные,
+# так что для них JS не нужен; Альфе этот путь не поможет, у неё
+# челлендж, и она честно упрётся в проверку looks_broken.
+PLAIN_TIMEOUT = 30
+PLAIN_HEADERS = {
+    "User-Agent": UA,
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+    "Accept-Encoding": "gzip, identity",
+    "Connection": "close",
+}
+
+BLOCK_TAGS = re.compile(
+    r"<\s*(script|style|noscript|svg|iframe|template)\b[^>]*>.*?<\s*/\s*\1\s*>",
+    re.I | re.S,
+)
+LINE_BREAKS = re.compile(r"<\s*(br|/p|/div|/li|/h[1-6]|/tr|/section)\b[^>]*>", re.I)
+ANY_TAG = re.compile(r"<[^>]+>")
+
+
+def html_to_text(html: str) -> str:
+    """Грубое превращение HTML в текст — на уровне innerText, но без DOM."""
+    html = BLOCK_TAGS.sub(" ", html)
+    html = LINE_BREAKS.sub("\n", html)
+    return unescape(ANY_TAG.sub(" ", html))
+
+
+def fetch_plain(name: str, url: str) -> str:
+    """Последняя попытка: HTTPS-запрос без браузера."""
+    try:
+        with urlopen(Request(url, headers=PLAIN_HEADERS), timeout=PLAIN_TIMEOUT) as resp:
+            raw = resp.read()
+            if resp.headers.get("Content-Encoding", "").lower() == "gzip":
+                raw = gzip.decompress(raw)
+            charset = resp.headers.get_content_charset() or "utf-8"
+    # URLError, HTTPError и разрывы соединения — все наследники OSError;
+    # HTTPException ловит обрыв на середине чтения, он мимо OSError.
+    except (OSError, HTTPException, ValueError) as exc:
+        print(f"  … {name}: запрос без браузера не прошёл — {exc}")
+        return ""
+
+    text = clean(html_to_text(raw.decode(charset, "replace")))
+    problem = looks_broken(text)
+    if problem:
+        print(f"  … {name}: запрос без браузера дал {problem}")
+        return ""
+    print(f"  ✓ {name}: {len(text)} символов (без браузера)")
+    return text
+
+
+def rel(path: Path) -> Path:
+    """Путь покороче для вывода; каталог вне проекта печатаем как есть."""
+    try:
+        return path.resolve().relative_to(ROOT)
+    except ValueError:
+        return path
+
+
 def fetch_one(page, name: str, url: str) -> str:
     """Тянет одну страницу, повторяя попытки при челлендже и таймауте."""
     last = ""
@@ -127,23 +197,22 @@ def fetch_one(page, name: str, url: str) -> str:
             print(f"  … {name}: {last}, повтор {attempt}/{ATTEMPTS}")
         time.sleep(POLITE_DELAY * attempt)
 
-    print(f"  ✗ {name}: не удалось — {last}", file=sys.stderr)
-    return ""
+    print(f"  ✗ {name}: браузером не удалось — {last}", file=sys.stderr)
+    return fetch_plain(name, url)
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--bank", help="id банка; по умолчанию все")
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    selection.add_args(ap)
     ap.add_argument("--out", type=Path, default=None,
                     help="каталог снапшотов (по умолчанию data/snapshots/<дата>)")
     args = ap.parse_args()
 
-    banks: List[Dict] = json.loads(DATA_FILE.read_text(encoding="utf-8"))["banks"]
-    if args.bank:
-        banks = [b for b in banks if b["id"] == args.bank]
-        if not banks:
-            print(f"Банк «{args.bank}» не найден в data/banks.json", file=sys.stderr)
-            return 2
+    banks: List[dict] = selection.select(selection.load_banks(), args)
+    if not banks:
+        print("Обновлять нечего: у всех банков свежие данные")
+        return 0
 
     out_dir = args.out or SNAP_DIR / date.today().isoformat()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -168,7 +237,7 @@ def main() -> int:
                 failed.append(bank["id"])
         browser.close()
 
-    print(f"\nСнимки: {out_dir.relative_to(ROOT)} — "
+    print(f"\nСнимки: {rel(out_dir)} — "
           f"{len(banks) - len(failed)} из {len(banks)}")
     if failed:
         print(f"Не собраны: {', '.join(failed)}", file=sys.stderr)

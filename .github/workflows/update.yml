@@ -2,13 +2,26 @@ name: Обновление данных
 
 on:
   schedule:
-    # Понедельник и четверг, 03:00 UTC = 06:00 МСК. GitHub запускает cron
-    # с задержкой до получаса, иногда пропускает прогон — для тарифов,
-    # которые банки правят раз в недели, это неважно.
-    # Реже суток выбрано ещё и ради квоты Gemini: 20 запросов в день на
-    # модель, прогон стоит 6, остаток остаётся на ручные запуски.
+    # Полный прогон: понедельник и четверг, 03:00 UTC = 06:00 МСК. GitHub
+    # запускает cron с задержкой до получаса, иногда пропускает прогон —
+    # для тарифов, которые банки правят раз в недели, это неважно.
     - cron: "0 3 * * 1,4"
+    # Дообновление: каждые четыре часа подбираем банки, которые не дались
+    # в основном прогоне. Сайты банков рвут соединение с раннером GitHub
+    # не постоянно, а полосами, и следующая попытка идёт уже с другого
+    # адреса — обычно этого хватает. Прогон, которому нечего делать,
+    # стоит секунд пятнадцать: до установки зависимостей дело не доходит.
+    - cron: "20 */4 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Что обновлять
+        type: choice
+        default: full
+        options: [full, repair]
+      banks:
+        description: "id через запятую — сильнее режима, например vtb,tbank"
+        required: false
 
 # Боту нужно право коммитить обновлённые данные обратно в main.
 # Кроме этого в репозитории ничего включать не требуется: Pages настроен
@@ -33,36 +46,73 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      # Список банков считается один раз и передаётся дальше явным
+      # списком id — чтобы сбор, извлечение и приёмка работали ровно по
+      # одному набору. selection.py обходится стандартной библиотекой и
+      # потому запускается до pip install.
+      - name: Что обновляем
+        id: plan
+        env:
+          BANKS: ${{ inputs.banks }}
+          MODE: ${{ inputs.mode }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ -n "$BANKS" ]; then
+            scope=$(python src/selection.py --ids "$BANKS")
+            why="указанные банки"
+            full=""
+          elif [ "$MODE" = "full" ] || [ "$SCHEDULE" = "0 3 * * 1,4" ]; then
+            scope=$(python src/selection.py --all)
+            why="полный прогон"
+            full="1"
+          else
+            scope=$(python src/selection.py)
+            why="дообновление отставших"
+            full=""
+          fi
+          {
+            echo "scope=$scope"
+            echo "why=$why"
+            echo "full=$full"
+          } >> "$GITHUB_OUTPUT"
+          echo "Режим: $why. Банки: ${scope:-нет, все данные свежие}"
+
       - name: Установка зависимостей
+        if: steps.plan.outputs.scope != ''
         run: |
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
 
-      # Частичный сбой не фатален: банк без свежего снимка получит статус
-      # stale и сохранит прошлые данные. Решение принимает шаг приёмки.
+      # Частичный сбой не фатален: банк без свежего снимка сохранит
+      # прошлые данные, получит статус stale — и его подберёт ближайшее
+      # дообновление, не дожидаясь следующего полного прогона.
       - name: Сбор страниц банков
-        run: python src/fetch.py
+        if: steps.plan.outputs.scope != ''
+        run: python src/fetch.py --banks "${{ steps.plan.outputs.scope }}"
         continue-on-error: true
 
       - name: Извлечение условий
+        if: steps.plan.outputs.scope != ''
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python src/extract.py
+        run: python src/extract.py --banks "${{ steps.plan.outputs.scope }}"
         continue-on-error: true
 
-      # Единственный шаг, который может остановить публикацию: если
-      # развалилось больше двух банков из шести, он падает, и дальше
-      # ни сборки, ни коммита не будет — сайт останется прежним.
+      # Единственный шаг, который может остановить публикацию: если в
+      # полном прогоне развалилось больше двух банков из шести, он падает,
+      # и дальше ни сборки, ни коммита не будет — сайт останется прежним.
       - name: Проверка и приёмка данных
-        run: python src/validate.py
+        if: steps.plan.outputs.scope != ''
+        run: python src/validate.py --banks "${{ steps.plan.outputs.scope }}"
 
       - name: Сборка страницы
+        if: steps.plan.outputs.scope != ''
         run: python src/build.py
 
       # Снимки страниц — единственный способ понять постфактум, что
       # реально было на сайте банка в момент прогона.
       - name: Снимки для разбора
-        if: always()
+        if: always() && steps.plan.outputs.scope != ''
         uses: actions/upload-artifact@v4
         with:
           name: snapshots-${{ github.run_number }}
@@ -70,15 +120,49 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
+      # Коммитим, только если изменились сами данные. Пересобранный HTML
+      # отличается всегда — в нём стоит время сборки, — и без этой
+      # проверки дообновление раз в четыре часа наполняло бы историю
+      # коммитами, в которых не поменялось ни одной ставки.
       - name: Публикация
+        if: steps.plan.outputs.scope != ''
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/banks.json docs/index.html
-          if git diff --staged --quiet; then
-            echo "Изменений нет — коммит пропущен"
+          if git diff --staged --quiet -- data/banks.json; then
+            echo "Данные не изменились — коммит пропущен"
+            git restore --staged data/banks.json docs/index.html
           else
-            git commit -m "Данные банков на $(date +%d.%m.%Y)"
+            if [ -n "${{ steps.plan.outputs.full }}" ]; then
+              msg="Данные банков на $(date +%d.%m.%Y)"
+            else
+              msg="Дообновление ${{ steps.plan.outputs.scope }} на $(date +%d.%m.%Y)"
+            fi
+            git commit -m "$msg"
+            # Пока шёл прогон, в main мог приехать коммит с ноутбука:
+            # без этого push отлетел бы как non-fast-forward.
+            git pull --rebase --quiet origin main
             git push
             echo "Запушено. Pages пересоберёт сайт за 1-2 минуты."
           fi
+
+      - name: Сводка
+        if: always()
+        run: |
+          {
+            echo "### ${{ steps.plan.outputs.why }}"
+            echo
+            echo "В прогоне: \`${{ steps.plan.outputs.scope || 'никого — все данные свежие' }}\`"
+            echo
+            python src/selection.py --report
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Дообновление копится молча: банк может неделями не даваться, а
+      # прогон при этом зелёный, потому что остальные пять обновились.
+      # Проверяем возраст данных раз в полный прогон — упавший job
+      # означает письмо от GitHub, иначе о застрявшем банке никто не
+      # узнает до следующего взгляда на сайт.
+      - name: Возраст данных
+        if: always() && steps.plan.outputs.full == '1'
+        run: python src/selection.py --check-age 7

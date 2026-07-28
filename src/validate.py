@@ -9,7 +9,13 @@
 он сохраняет прошлые данные и помечается stale. Если развалилось больше
 MAX_FAILED банков, скрипт падает и публикация не происходит вовсе.
 
+При точечном прогоне (`--banks`, `--stale`) в расчёт идут только
+названные банки: остальные переносятся в новый файл как есть, вместе со
+статусом и датой проверки. Без этого дообновление одного ВТБ пометило бы
+пять оставшихся банков как stale — они в этом прогоне не собирались.
+
     python src/validate.py                    # применить к data/banks.json
+    python src/validate.py --stale            # принять только дообновлённые
     python src/validate.py --check-only       # только отчёт
 """
 
@@ -21,9 +27,10 @@ import re
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent))
+import selection  # noqa: E402
 from schema import RATE_MAX, RATE_MIN, Bank, Dataset  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -51,6 +58,7 @@ class Report:
     def __init__(self) -> None:
         self.dropped: List[str] = []
         self.failed: List[str] = []
+        self.skipped: List[str] = []
 
     def drop(self, bank: str, what: str, why: str) -> None:
         self.dropped.append(f"{bank}: {what} — {why}")
@@ -137,12 +145,20 @@ def has_substance(data: Dict) -> bool:
 
 
 def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
-          today: date, rep: Report) -> Tuple[List[Dict], int]:
+          today: date, rep: Report, scope: Set[str]) -> Tuple[List[Dict], int]:
     """Накладывает проверенные данные на текущие. Возвращает (банки, ok)."""
     banks_out, ok = [], 0
 
     for bank in current.banks:
         prev = bank.model_dump(mode="json")
+
+        # Банк вне прогона трогать нельзя ничем: ни статусом, ни датой.
+        # Он не собирался, значит про него ничего нового не известно.
+        if bank.id not in scope:
+            rep.skipped.append(bank.id)
+            banks_out.append(prev)
+            continue
+
         raw = extracted.get(bank.id)
 
         if raw is None:
@@ -187,7 +203,9 @@ def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    selection.add_args(ap)
     ap.add_argument("--snapshots", type=Path, default=None)
     ap.add_argument("--extracted", type=Path, default=None)
     ap.add_argument("--check-only", action="store_true",
@@ -198,16 +216,24 @@ def main() -> int:
     snap_dir = args.snapshots or SNAP_DIR / today.isoformat()
     extracted_file = args.extracted or snap_dir / "extracted.json"
 
+    stored = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    current = Dataset(**stored)
+    scope = {b["id"] for b in selection.select(stored["banks"], args, today)}
+    partial = scope != {b.id for b in current.banks}
+
+    if not scope:
+        print("Принимать нечего: у всех банков свежие данные")
+        return 0
+
     if not extracted_file.is_file():
         print(f"Нет {extracted_file}. Сначала запустите src/extract.py",
               file=sys.stderr)
         return 2
 
-    current = Dataset(**json.loads(DATA_FILE.read_text(encoding="utf-8")))
     extracted = json.loads(extracted_file.read_text(encoding="utf-8"))
 
     rep = Report()
-    banks_out, ok = merge(current, extracted, snap_dir, today, rep)
+    banks_out, ok = merge(current, extracted, snap_dir, today, rep, scope)
 
     if rep.dropped:
         print("Отбраковано:")
@@ -216,15 +242,28 @@ def main() -> int:
     if rep.failed:
         print(f"\nБез свежих данных (оставлены прошлые, помечены stale): "
               f"{', '.join(rep.failed)}")
-    print(f"\nОбновлено {ok} из {len(current.banks)} банков")
+    if rep.skipped:
+        print(f"Вне прогона (перенесены без изменений): {', '.join(rep.skipped)}")
+    print(f"\nОбновлено {ok} из {len(scope)} банков в прогоне")
 
-    if len(rep.failed) > MAX_FAILED:
+    # Порог — про полный прогон: развалившееся большинство означает
+    # сломанный пайплайн, и публиковать такое нельзя. У точечного прогона
+    # смысл обратный: он и запускается потому, что банк не даётся, а
+    # остальные пять данных в файле уже верны и должны остаться на сайте.
+    if not partial and len(rep.failed) > MAX_FAILED:
         print(f"\n✗ Развалилось {len(rep.failed)} банков при пороге {MAX_FAILED}. "
               f"Публикация отменена — данные не записаны.", file=sys.stderr)
         return 1
 
     if args.check_only:
         print("(--check-only: файл не изменён)")
+        return 0
+
+    # Дообновление ходит каждые несколько часов и чаще всего ничего не
+    # находит. Переписывать файл ради нового generated_at не нужно: пустая
+    # правка дошла бы до коммита и засорила историю сайта.
+    if banks_out == [b.model_dump(mode="json") for b in current.banks]:
+        print("Данные не изменились — data/banks.json не переписан")
         return 0
 
     payload = {"generated_at": datetime.now().isoformat(timespec="seconds"),
