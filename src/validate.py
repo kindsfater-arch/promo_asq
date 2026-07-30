@@ -6,8 +6,12 @@
 
 Логика: каждое значение проверяется отдельно; не прошедшее выбрасывается,
 а не правится. Если у банка после отбраковки не осталось содержания —
-он сохраняет прошлые данные и помечается stale. Если развалилось больше
-MAX_FAILED банков, скрипт падает и публикация не происходит вовсе.
+он сохраняет прошлые данные и помечается stale.
+
+Публикация отменяется целиком, только если развалилось больше MAX_FAILED
+банков, чьи снимки дошли до модели: значит, сломан пайплайн, а не сайты.
+Банк, чью страницу вообще не отдали, к порогу не относится — это про его
+защиту от ботов, и лечится дообновлением, а не остановкой публикации.
 
 При точечном прогоне (`--banks`, `--stale`) в расчёт идут только
 названные банки: остальные переносятся в новый файл как есть, вместе со
@@ -57,8 +61,10 @@ def norm(s: str) -> str:
 class Report:
     def __init__(self) -> None:
         self.dropped: List[str] = []
-        self.failed: List[str] = []
-        self.skipped: List[str] = []
+        self.failed: List[str] = []      # снимок был, содержания не вышло
+        self.unfetched: List[str] = []   # страницу не отдали
+        self.skipped: List[str] = []     # банк вне прогона
+        self.rescued: List[str] = []     # акция, которую модель потеряла
 
     def drop(self, bank: str, what: str, why: str) -> None:
         self.dropped.append(f"{bank}: {what} — {why}")
@@ -128,6 +134,59 @@ def clean_bank(bank_id: str, data: Dict, snapshot: str, today: date,
     return out
 
 
+def same_offer(a: Dict, b: Dict) -> bool:
+    """Одно и то же предложение под разными формулировками?
+
+    По одному названию судить нельзя: модель переписывает их от прогона к
+    прогону («для новых клиентов» вместо «для новых корпоративных
+    клиентов»), и предохранитель ниже вернул бы ту же акцию вторым
+    экземпляром. Надёжнее цитата — она дословная, и у одной акции варианты
+    цитаты вложены друг в друга, — плюс совпадение ставки и срока.
+    """
+    title_a, title_b = norm(a.get("title") or ""), norm(b.get("title") or "")
+    if title_a and title_a == title_b:
+        return True
+
+    quote_a, quote_b = norm(a.get("source_quote") or ""), norm(b.get("source_quote") or "")
+    if quote_a and quote_b and (quote_a in quote_b or quote_b in quote_a):
+        return True
+
+    rate_a, rate_b = a.get("rate"), b.get("rate")
+    until_a, until_b = parse_date(a.get("valid_until")), parse_date(b.get("valid_until"))
+    return (rate_a is not None and rate_a == rate_b
+            and until_a is not None and until_a == until_b)
+
+
+def rescue_promos(new: List[Dict], old: List[Dict], snapshot: str,
+                  bank_id: str, rep: Report) -> List[Dict]:
+    """Возвращает акции, которые потеряло извлечение, а страница сохранила.
+
+    Тот же предохранитель, что стоит на базовой ставке, только для акций.
+    Когда основная модель отдаёт 503 и работу доделывает запасная, она
+    регулярно приносит по странице одну акцию вместо четырёх: 30.07 у
+    Сбера так пропали компенсация НДС и два региональных предложения,
+    хотя на странице они лежали на прежнем месте.
+
+    Критерий возврата один: дословная цитата потерянной акции всё ещё
+    встречается в сегодняшнем снимке. Значит, предложение на странице
+    осталось и промахнулось извлечение. Акцию, которую банк действительно
+    снял, цитата не спасёт — её в снимке уже нет.
+    """
+    hay = norm(snapshot)
+    out = list(new)
+    for promo in old:
+        quote = promo.get("source_quote")
+        if not promo.get("title") or not quote:
+            continue
+        if any(same_offer(promo, kept) for kept in out):
+            continue
+        if not quote_ok(quote, hay):
+            continue
+        out.append(promo)
+        rep.rescued.append(f"{bank_id}: «{promo.get('title')}»")
+    return out
+
+
 def has_substance(data: Dict) -> bool:
     """Есть ли в извлечении осмысленное содержание.
 
@@ -159,7 +218,17 @@ def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
             banks_out.append(prev)
             continue
 
+        snap_file = snap_dir / f"{bank.id}.txt"
         raw = extracted.get(bank.id)
+
+        # Страницу не отдали вовсе — это про сайт банка, а не про нас, и
+        # к порогу приёмки такой банк не относится (см. main). Данные
+        # остаются прошлыми, статус stale, дальше его берёт дообновление.
+        if not snap_file.is_file():
+            rep.unfetched.append(bank.id)
+            prev["status"] = "stale"
+            banks_out.append(prev)
+            continue
 
         if raw is None:
             rep.failed.append(bank.id)
@@ -167,8 +236,7 @@ def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
             banks_out.append(prev)
             continue
 
-        snap_file = snap_dir / f"{bank.id}.txt"
-        snapshot = snap_file.read_text(encoding="utf-8") if snap_file.is_file() else ""
+        snapshot = snap_file.read_text(encoding="utf-8")
         cleaned = clean_bank(bank.id, raw, snapshot, today, rep)
 
         if not has_substance(cleaned):
@@ -193,6 +261,11 @@ def merge(current: Dataset, extracted: Dict[str, Dict], snap_dir: Path,
             merged["base_rate_quote"] = prev.get("base_rate_quote")
             rep.drop(bank.id, "базовая ставка",
                      "не извлеклась в этот раз — сохранена прошлая")
+
+        merged["promos"] = rescue_promos(
+            cleaned.get("promos") or [], prev.get("promos") or [],
+            snapshot, bank.id, rep,
+        )
 
         merged["checked_at"] = today.isoformat()
         merged["status"] = "ok"
@@ -239,20 +312,31 @@ def main() -> int:
         print("Отбраковано:")
         for line in rep.dropped:
             print(f"  – {line}")
+    if rep.rescued:
+        print("Возвращены акции, которые модель потеряла, а страница сохранила:")
+        for line in rep.rescued:
+            print(f"  + {line}")
+    if rep.unfetched:
+        print(f"\nСтраницу не отдали (оставлены прошлые данные, stale): "
+              f"{', '.join(rep.unfetched)}")
     if rep.failed:
-        print(f"\nБез свежих данных (оставлены прошлые, помечены stale): "
+        print(f"Снимок есть, содержания не вышло (оставлены прошлые, stale): "
               f"{', '.join(rep.failed)}")
     if rep.skipped:
         print(f"Вне прогона (перенесены без изменений): {', '.join(rep.skipped)}")
     print(f"\nОбновлено {ok} из {len(scope)} банков в прогоне")
 
-    # Порог — про полный прогон: развалившееся большинство означает
-    # сломанный пайплайн, и публиковать такое нельзя. У точечного прогона
-    # смысл обратный: он и запускается потому, что банк не даётся, а
-    # остальные пять данных в файле уже верны и должны остаться на сайте.
+    # Порог считает только те банки, чей снимок дошёл до модели, но не дал
+    # содержания: это признак сломанного пайплайна, и публиковать такое
+    # нельзя. Недоступные сайты порогу не подсудны — иначе получается то,
+    # что случилось 30.07: три банка не отдали страницы, приёмка сочла
+    # прогон развалившимся и отменила публикацию целиком, хотя по трём
+    # остальным данные были свежие и верные. Ушедший в stale банк ничего
+    # не теряет: его данные остаются прошлыми, а забирает его дообновление.
     if not partial and len(rep.failed) > MAX_FAILED:
-        print(f"\n✗ Развалилось {len(rep.failed)} банков при пороге {MAX_FAILED}. "
-              f"Публикация отменена — данные не записаны.", file=sys.stderr)
+        print(f"\n✗ Развалилось {len(rep.failed)} банков при пороге {MAX_FAILED} "
+              f"(снимки были, содержания нет). Публикация отменена — данные "
+              f"не записаны.", file=sys.stderr)
         return 1
 
     if args.check_only:
