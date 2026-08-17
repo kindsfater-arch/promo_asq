@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T08:51:03",
+  "generated_at": "2026-08-17T01:58:31",
   "banks": [
     {
       "id": "sber",
@@ -93,7 +93,7 @@
       "color": "#EF3124",
       "source_url": "https://alfabank.ru/sme/payservice/",
       "checked_at": "2026-08-12",
-      "status": "ok",
+      "status": "stale",
       "base_rate_from": 1.0,
       "base_rate_note": "Ставка от 1% для торгового эквайринга, тариф зависит от оборота в месяц.",
       "base_rate_quote": "Комиссия от 1%",
