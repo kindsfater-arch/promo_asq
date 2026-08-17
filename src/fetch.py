@@ -53,16 +53,25 @@ UA = (
 # Т-Банк со своими обычными CA проверяются ровно как раньше.
 CA_BUNDLE = ROOT / "certs" / "russian_trusted_ca.pem"
 
-# Chromium системным хранилищем OpenSSL не пользуется, поэтому тот же
-# корень передаётся ему отдельно — списком SPKI-отпечатков. Флаг снимает
-# ошибку цепочки ТОЛЬКО для сертификатов с этими открытыми ключами, для
-# всех остальных сайтов проверка обычная. Отпечатки считаются из того же
-# бандла: openssl x509 -pubkey | openssl pkey -pubin -outform der
-#                     | openssl dgst -sha256 -binary | base64
+# Chromium системным хранилищем OpenSSL не пользуется, поэтому те же
+# сертификаты передаются ему отдельно — списком SPKI-отпечатков. Флаг
+# снимает ошибку цепочки ТОЛЬКО для сертификатов с этими открытыми
+# ключами, для всех остальных сайтов проверка обычная.
+#
+# Нужны отпечатки всех трёх, а не одного корня: сервер присылает корень
+# не всегда. Сбер присылает и корень — и прошёл сразу; ВТБ шлёт только
+# лист и промежуточный, поэтому без строки 2024 года он продолжал падать
+# с ERR_CERT_AUTHORITY_INVALID. Промежуточные носят одно имя «Russian
+# Trusted Sub CA», но ключи у них разные, и банки стоят на выпуске 2024.
+#
+# Пересчитать отпечаток из бандла:
+#   openssl x509 -in <файл> -pubkey -noout | openssl pkey -pubin -outform der \
+#     | openssl dgst -sha256 -binary | base64
 CHROMIUM_ARGS = [
     "--ignore-certificate-errors-spki-list="
-    "ArgiDAcHKNt3HZrFnlRSHE7drSGng7smz98ZwdsPrjc="   # Russian Trusted Root CA
-    ",BEeqSxjEi56NsW6RgJKG3Sfv1qULqA0whOuecLqOHco="  # Russian Trusted Sub CA
+    "ArgiDAcHKNt3HZrFnlRSHE7drSGng7smz98ZwdsPrjc="   # Root CA
+    ",BEeqSxjEi56NsW6RgJKG3Sfv1qULqA0whOuecLqOHco="  # Sub CA, выпуск 2022
+    ",N7la4XONxMaWYRRHFWaf25yT562zNjQi3rYcDzrPZcE="  # Sub CA, выпуск 2024
 ]
 
 # Т-Банк просит Crawl-delay: 2.0 в robots.txt — соблюдаем для всех.
