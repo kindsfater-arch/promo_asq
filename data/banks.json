@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T07:26:51",
+  "generated_at": "2026-08-17T07:31:50",
   "banks": [
     {
       "id": "sber",
@@ -175,7 +175,7 @@
       "color": "#0A2896",
       "source_url": "https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/",
       "checked_at": "2026-08-17",
-      "status": "stale",
+      "status": "ok",
       "base_rate_from": 1.9,
       "base_rate_note": "Начисляется на сумму сверх установленного лимита 500 000 ₽/мес. и после завершения акции",
       "base_rate_quote": "от 1,9%Начисляется на сумму сверх установленного лимита 500 000 ₽/мес. и после завершения акции",
