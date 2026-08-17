@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import re
+import ssl
 import sys
 import time
 from datetime import date
@@ -39,6 +40,30 @@ UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
+
+# Сбер, Альфа, ВТБ и БСПБ отдают TLS-цепочку, замкнутую на корень
+# «Russian Trusted Root CA» Минцифры. На ноутбуке он стоит в системном
+# хранилище, и оттуда сбор проходит; на раннере GitHub его нет, и с 03.08
+# по 17.08 эти четыре банка не собрались там ни разу за 51 попытку —
+# ERR_CERT_AUTHORITY_INVALID у браузера, «self-signed certificate in
+# certificate chain» у запасного пути.
+#
+# Бандл лежит в репозитории и ДОБАВЛЯЕТСЯ к системным корням, а не
+# заменяет их: проверка сертификата остаётся включённой везде, ГПБ и
+# Т-Банк со своими обычными CA проверяются ровно как раньше.
+CA_BUNDLE = ROOT / "certs" / "russian_trusted_ca.pem"
+
+# Chromium системным хранилищем OpenSSL не пользуется, поэтому тот же
+# корень передаётся ему отдельно — списком SPKI-отпечатков. Флаг снимает
+# ошибку цепочки ТОЛЬКО для сертификатов с этими открытыми ключами, для
+# всех остальных сайтов проверка обычная. Отпечатки считаются из того же
+# бандла: openssl x509 -pubkey | openssl pkey -pubin -outform der
+#                     | openssl dgst -sha256 -binary | base64
+CHROMIUM_ARGS = [
+    "--ignore-certificate-errors-spki-list="
+    "ArgiDAcHKNt3HZrFnlRSHE7drSGng7smz98ZwdsPrjc="   # Russian Trusted Root CA
+    ",BEeqSxjEi56NsW6RgJKG3Sfv1qULqA0whOuecLqOHco="  # Russian Trusted Sub CA
+]
 
 # Т-Банк просит Crawl-delay: 2.0 в robots.txt — соблюдаем для всех.
 POLITE_DELAY = 2.0
@@ -129,10 +154,22 @@ def html_to_text(html: str) -> str:
     return unescape(ANY_TAG.sub(" ", html))
 
 
+def ssl_context() -> ssl.SSLContext:
+    """Системные корни плюс корень Минцифры, если бандл на месте."""
+    ctx = ssl.create_default_context()
+    if CA_BUNDLE.is_file():
+        ctx.load_verify_locations(cafile=str(CA_BUNDLE))
+    else:
+        print(f"  (нет {CA_BUNDLE.name} — банки на сертификатах Минцифры "
+              f"не соберутся)", file=sys.stderr)
+    return ctx
+
+
 def fetch_plain(name: str, url: str) -> str:
     """Последняя попытка: HTTPS-запрос без браузера."""
     try:
-        with urlopen(Request(url, headers=PLAIN_HEADERS), timeout=PLAIN_TIMEOUT) as resp:
+        with urlopen(Request(url, headers=PLAIN_HEADERS), timeout=PLAIN_TIMEOUT,
+                     context=ssl_context()) as resp:
             raw = resp.read()
             if resp.headers.get("Content-Encoding", "").lower() == "gzip":
                 raw = gzip.decompress(raw)
@@ -219,7 +256,7 @@ def main() -> int:
 
     failed = []
     with sync_playwright() as pw:
-        browser = pw.chromium.launch()
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
         ctx = browser.new_context(
             user_agent=UA,
             locale="ru-RU",
