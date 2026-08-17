@@ -57,11 +57,16 @@ def age_days(bank: Dict, today: date) -> Optional[int]:
     return None if seen is None else (today - seen).days
 
 
+def too_old(bank: Dict, today: date, max_age: int) -> bool:
+    """Данные старше max_age дней или с неразобранной датой проверки."""
+    age = age_days(bank, today)
+    return age is None or age > max_age
+
+
 def needs_refresh(bank: Dict, today: date, max_age: int = STALE_AFTER_DAYS) -> bool:
     if bank.get("status") != "ok":
         return True
-    age = age_days(bank, today)
-    return age is None or age > max_age
+    return too_old(bank, today, max_age)
 
 
 def parse_ids(raw: Optional[str]) -> List[str]:
@@ -147,7 +152,13 @@ def main() -> int:
         return 0
 
     if args.check_age is not None:
-        old = [b for b in banks if (age_days(b, today) or 10**6) > args.check_age]
+        # Считает too_old(), а не выражение `age_days() or 10**6`, которое
+        # стояло здесь раньше: у банка, проверенного сегодня, возраст 0, а
+        # 0 в питоне ложь — и подстановка превращала самый свежий банк в
+        # протухший на миллион дней. Шаг «Возраст данных» падал ровно
+        # после удачного полного прогона, когда все шесть банков только
+        # что обновились, и GitHub слал письмо о несуществующем сбое.
+        old = [b for b in banks if too_old(b, today, args.check_age)]
         if old:
             print("Данные не обновлялись дольше "
                   f"{args.check_age} дней:", file=sys.stderr)
