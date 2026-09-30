@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T00:27:53",
+  "generated_at": "2026-09-30T05:38:02",
   "banks": [
     {
       "id": "sber",
@@ -14,7 +14,7 @@
       "promos": [
         {
           "title": "Эквайринг бесплатно на 185 дней",
-          "rate": 0,
+          "rate": 0.0,
           "rate_note": "0% при обороте до 300 000 ₽ в месяц",
           "valid_from": "2026-09-01",
           "valid_until": "2027-04-03",
@@ -142,7 +142,7 @@
       "color": "#0E4C8B",
       "source_url": "https://www.gazprombank.ru/business/trade-acquiring/",
       "checked_at": "2026-09-25",
-      "status": "ok",
+      "status": "stale",
       "base_rate_from": null,
       "base_rate_note": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота",
       "base_rate_quote": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота",
