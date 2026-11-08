@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T06:08:27",
+  "generated_at": "2026-11-08T07:59:30",
   "banks": [
     {
       "id": "sber",
@@ -109,8 +109,8 @@
       "name": "Газпромбанк",
       "color": "#0E4C8B",
       "source_url": "https://www.gazprombank.ru/business/trade-acquiring/",
-      "checked_at": "2026-10-31",
-      "status": "stale",
+      "checked_at": "2026-11-08",
+      "status": "ok",
       "base_rate_from": null,
       "base_rate_note": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота",
       "base_rate_quote": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота",

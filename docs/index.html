@@ -3,56 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Специальные предложения банков по эквайрингу · 07.11.2026</title>
-<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<title>Специальные предложения банков по эквайрингу · 08.11.2026</title>
+<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ. Калькулятор расходов, сравнение ставок, проверенные цитаты.">
 <style>
 /* ─────────────────────────────────────────────────────────────
    Финансовый бюллетень: бумага, чернила, табличные цифры.
    Ноль внешних зависимостей — файл открывается без сети.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --paper:      #f4f0e6;
-  --paper-2:    #fbf9f4;
-  --ink:        #17140f;
-  --ink-soft:   #5f5849;
-  --ink-faint:  #8c8474;
-  --rule:       #d4cdba;
-  --rule-soft:  #e4ded0;
-  --accent:     #a8301a;
-  --accent-dim: #a8301a1a;
-  --good:       #1f6b41;
-  --good-dim:   #1f6b4114;
-  --shadow:     0 1px 2px rgba(23,20,15,.06), 0 8px 24px -12px rgba(23,20,15,.18);
+  --paper:       #f4f0e6;
+  --paper-2:     #fbf9f4;
+  --paper-card:  #ffffff;
+  --ink:         #17140f;
+  --ink-soft:    #5f5849;
+  --ink-faint:   #8c8474;
+  --rule:        #d4cdba;
+  --rule-soft:   #e4ded0;
+  --accent:      #a8301a;
+  --accent-dim:  #a8301a18;
+  --good:        #1f6b41;
+  --good-dim:    #1f6b4114;
+  --shadow-sm:   0 1px 3px rgba(23,20,15,.06);
+  --shadow:      0 2px 8px -2px rgba(23,20,15,.08), 0 12px 28px -12px rgba(23,20,15,.14);
   --display: ui-serif, "Iowan Old Style", "New York", "Hoefler Text", Georgia, "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   --measure: 1180px;
 }
 :root[data-theme="dark"] {
-  --paper:      #131110;
-  --paper-2:    #1c1917;
-  --ink:        #ece5d6;
-  --ink-soft:   #a49c8b;
-  --ink-faint:  #7a7264;
-  --rule:       #332e28;
-  --rule-soft:  #262220;
-  --accent:     #e2704f;
-  --accent-dim: #e2704f1f;
-  --good:       #5cb98a;
-  --good-dim:   #5cb98a1a;
-  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  --paper:       #131110;
+  --paper-2:     #1c1917;
+  --paper-card:  #24201d;
+  --ink:         #ece5d6;
+  --ink-soft:    #a49c8b;
+  --ink-faint:   #7a7264;
+  --rule:        #332e28;
+  --rule-soft:   #262220;
+  --accent:      #e2704f;
+  --accent-dim:  #e2704f1f;
+  --good:        #5cb98a;
+  --good-dim:    #5cb98a1a;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.3);
+  --shadow:      0 2px 8px -2px rgba(0,0,0,.5), 0 12px 28px -12px rgba(0,0,0,.7);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper:#131110; --paper-2:#1c1917; --ink:#ece5d6; --ink-soft:#a49c8b;
+    --paper:#131110; --paper-2:#1c1917; --paper-card:#24201d; --ink:#ece5d6; --ink-soft:#a49c8b;
     --ink-faint:#7a7264; --rule:#332e28; --rule-soft:#262220;
     --accent:#e2704f; --accent-dim:#e2704f1f; --good:#5cb98a; --good-dim:#5cb98a1a;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+    --shadow-sm:0 1px 3px rgba(0,0,0,.3); --shadow:0 2px 8px -2px rgba(0,0,0,.5), 0 12px 28px -12px rgba(0,0,0,.7);
   }
 }
 
-/* Фирменные цвета банков приходят из данных как есть. Тёмно-синий ВТБ
-   (#0A2896) на угольном фоне сливается — в тёмной теме подмешиваем белый. */
+/* Фирменные цвета банков приходят из данных как есть */
 [style*="--bar"] { --bar-vis: var(--bar); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) [style*="--bar"] { --bar-vis: color-mix(in srgb, var(--bar) 55%, #fff); }
@@ -70,7 +73,6 @@ body {
   font-size: 17px;
   line-height: 1.55;
   overflow-x: hidden;
-  /* Зерно бумаги — inline SVG, ничего не грузится извне. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
 :root[data-theme="dark"] body { background-blend-mode: screen; }
@@ -91,7 +93,7 @@ body {
 .nav-mark {
   font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
   text-transform: uppercase; color: var(--accent); font-weight: 700;
-  white-space: nowrap;
+  white-space: nowrap; text-decoration: none;
 }
 .nav-links { display: flex; gap: 1.1rem; overflow-x: auto; scrollbar-width: none; flex: 1; }
 .nav-links::-webkit-scrollbar { display: none; }
@@ -117,7 +119,7 @@ body {
 }
 
 /* ── шапка ─────────────────────────────────────────────────── */
-.masthead { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+.masthead { padding: clamp(2.5rem, 6vw, 4.5rem) 0 2rem; }
 .masthead .kicker {
   font-family: var(--mono); font-size: .7rem; letter-spacing: .2em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem;
@@ -125,42 +127,237 @@ body {
 }
 .masthead .kicker::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 .masthead h1 {
-  font-size: clamp(2.4rem, 7.5vw, 5.2rem); line-height: .98; margin: 0 0 1.2rem;
+  font-size: clamp(2.3rem, 6.5vw, 4.8rem); line-height: .98; margin: 0 0 1.2rem;
   font-weight: 600; letter-spacing: -.025em;
 }
 .masthead h1 em { font-style: italic; color: var(--accent); }
 .lede {
-  font-size: clamp(1.02rem, 1.9vw, 1.24rem); color: var(--ink-soft);
-  max-width: 46ch; margin: 0 0 2rem;
+  font-size: clamp(1.02rem, 1.8vw, 1.2rem); color: var(--ink-soft);
+  max-width: 52ch; margin: 0 0 2rem;
 }
 .meta {
-  display: flex; flex-wrap: wrap; gap: .5rem 2rem;
+  display: flex; flex-wrap: wrap; gap: .6rem 2rem;
   font-family: var(--mono); font-size: .72rem; letter-spacing: .06em;
   text-transform: uppercase; color: var(--ink-faint);
   padding-top: 1.2rem; border-top: 3px double var(--rule);
 }
 .meta b { color: var(--ink); font-weight: 500; }
 
+/* ── KPI блоки ─────────────────────────────────────────────── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
+  margin: 2rem 0 1rem;
+}
+@media (min-width: 820px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+.kpi-box {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: 1rem 1.2rem; display: flex; flex-direction: column;
+}
+.kpi-box .label {
+  font-family: var(--sans); font-size: .68rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .4rem;
+}
+.kpi-box .val {
+  font-family: var(--mono); font-size: 1.8rem; font-weight: 700;
+  line-height: 1; color: var(--ink);
+}
+.kpi-box .val.good { color: var(--good); }
+.kpi-box .sub {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-soft);
+  margin-top: .4rem;
+}
+
 /* ── секции ────────────────────────────────────────────────── */
-section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
-.head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+section { padding: clamp(2.2rem, 5vw, 4rem) 0; }
+.head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.8rem; flex-wrap: wrap; }
 .head .num {
   font-family: var(--mono); font-size: .72rem; color: var(--accent);
   letter-spacing: .1em; padding-top: .5rem;
 }
 .head h2 {
-  font-size: clamp(1.5rem, 3.4vw, 2.3rem); margin: 0; font-weight: 600;
+  font-size: clamp(1.4rem, 3.2vw, 2.1rem); margin: 0; font-weight: 600;
   letter-spacing: -.018em;
 }
 .head .note {
   font-family: var(--sans); font-size: .8rem; color: var(--ink-faint);
-  margin-left: auto; text-align: right; max-width: 30ch;
+  margin-left: auto; text-align: right; max-width: 32ch;
+}
+
+/* ── интерактивный калькулятор ─────────────────────────────── */
+.calc-card {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: clamp(1.4rem, 3vw, 2.2rem); margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+.calc-controls {
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+@media (min-width: 800px) {
+  .calc-controls { grid-template-columns: 1.6fr 1fr; align-items: start; }
+}
+.calc-field label {
+  display: block; font-family: var(--sans); font-size: .8rem;
+  font-weight: 600; color: var(--ink); margin-bottom: .6rem;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.slider-wrap { display: flex; flex-direction: column; gap: .7rem; }
+.slider-row { display: flex; align-items: center; gap: 1rem; }
+.calc-slider {
+  flex: 1; -webkit-appearance: none; appearance: none; height: 6px;
+  background: var(--rule); border-radius: 3px; outline: none; cursor: pointer;
+}
+.calc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  border: 2px solid var(--paper-2); box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  transition: transform .15s;
+}
+.calc-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.calc-val-display {
+  font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+  color: var(--accent); min-width: 140px; text-align: right;
+  white-space: nowrap;
+}
+.calc-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.calc-chip {
+  font-family: var(--sans); font-size: .73rem; padding: .25rem .6rem;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink-soft);
+  cursor: pointer; border-radius: 4px; transition: all .15s;
+}
+.calc-chip:hover { border-color: var(--accent); color: var(--ink); }
+.calc-chip.on {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.calc-options {
+  display: flex; flex-direction: column; gap: .8rem;
+  padding: 1rem; background: var(--paper); border: 1px solid var(--rule-soft);
+}
+.opt-label {
+  display: flex; align-items: center; gap: .6rem; font-family: var(--sans);
+  font-size: .82rem; color: var(--ink); cursor: pointer; user-select: none;
+}
+.opt-label input[type="checkbox"] {
+  width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer;
+}
+
+/* Результаты калькулятора */
+.calc-results-grid {
+  display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) {
+  .calc-results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1020px) {
+  .calc-results-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.calc-result-card {
+  background: var(--paper-card); border: 1px solid var(--rule);
+  padding: 1.2rem; display: flex; flex-direction: column; position: relative;
+  border-top: 3px solid var(--bar-vis, var(--rule));
+  transition: transform .2s, box-shadow .2s;
+}
+.calc-result-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.calc-result-card.is-winner {
+  border-color: var(--good); border-top-width: 4px;
+  background: color-mix(in srgb, var(--good-dim) 35%, var(--paper-card));
+}
+.calc-rank {
+  font-family: var(--mono); font-size: .65rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .2rem;
+}
+.calc-rank.win-badge {
+  color: var(--good); font-weight: 700;
+}
+.calc-card-name { font-size: 1.15rem; font-weight: 600; margin: 0 0 .5rem; }
+.calc-total-box {
+  margin: .6rem 0; padding: .6rem 0;
+  border-top: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft);
+}
+.calc-total-sum {
+  font-family: var(--mono); font-size: 1.85rem; font-weight: 700;
+  line-height: 1; color: var(--ink);
+}
+.calc-total-sum.win-sum { color: var(--good); }
+.calc-total-period {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-faint);
+  text-transform: uppercase; margin-left: .2rem;
+}
+.calc-breakdown {
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-soft);
+  display: flex; flex-direction: column; gap: .25rem; margin-top: .4rem;
+}
+.calc-breakdown-row { display: flex; justify-content: space-between; }
+.calc-savings {
+  margin-top: .7rem; padding: .35rem .5rem; background: var(--good-dim);
+  border-left: 2px solid var(--good); font-family: var(--sans);
+  font-size: .72rem; color: var(--good); font-weight: 600;
+}
+.calc-note {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-faint);
+  margin-top: .6rem; line-height: 1.35;
+}
+
+/* ── тулбар фильтрации и поиска ────────────────────────────── */
+.toolbar {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: 1rem 1.25rem; margin-bottom: 1.8rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.tool-top { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.search-box {
+  flex: 1; min-width: 240px; position: relative; display: flex; align-items: center;
+}
+.search-box input {
+  width: 100%; height: 2.3rem; padding: 0 .8rem 0 2.2rem;
+  background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .84rem; color: var(--ink);
+  outline: none; transition: border-color .2s; border-radius: 2px;
+}
+.search-box input:focus { border-color: var(--accent); }
+.search-icon {
+  position: absolute; left: .7rem; font-size: .85rem; color: var(--ink-faint);
+  pointer-events: none;
+}
+.search-kbd {
+  position: absolute; right: .6rem; font-family: var(--mono); font-size: .62rem;
+  padding: .15rem .35rem; background: var(--paper-2); border: 1px solid var(--rule);
+  color: var(--ink-faint); border-radius: 3px; pointer-events: none;
+}
+.tool-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tool-btn {
+  height: 2.3rem; padding: 0 .8rem; background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .76rem; color: var(--ink-soft);
+  cursor: pointer; display: flex; align-items: center; gap: .4rem;
+  transition: all .2s; border-radius: 2px;
+}
+.tool-btn:hover { border-color: var(--accent); color: var(--ink); }
+
+.tool-filters {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  border-top: 1px solid var(--rule-soft); padding-top: .8rem;
+}
+.filter-label {
+  font-family: var(--sans); font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-right: .3rem;
+}
+.filter-pill {
+  font-family: var(--sans); font-size: .74rem; padding: .25rem .65rem;
+  background: var(--paper); border: 1px solid var(--rule); color: var(--ink-soft);
+  border-radius: 999px; cursor: pointer; transition: all .15s;
+}
+.filter-pill:hover { border-color: var(--accent); color: var(--ink); }
+.filter-pill.on {
+  background: var(--ink); color: var(--paper); border-color: var(--ink);
+}
+.sort-wrap { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
+.sort-select {
+  height: 2rem; padding: 0 .6rem; background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .76rem; color: var(--ink); outline: none;
+  cursor: pointer;
 }
 
 /* ── карточки банков ───────────────────────────────────────── */
-/* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
-/* align-items: start — иначе карточки тянутся по высоте самой длинной
-   в ряду, и у банков с коротким описанием зияет пустота в полэкрана. */
 .banks { display: grid; gap: 1.25rem; align-items: start; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 760px)  { .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1120px) { .banks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -192,8 +389,6 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
   text-transform: uppercase; letter-spacing: .09em; padding-bottom: .25rem;
 }
 .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
-/* Без nowrap: длинная аудитория акции («новым клиентам и действующим
-   без договора эквайринга 180 дней») иначе распирает карточку на мобиле. */
 .tag {
   font-family: var(--sans); font-size: .69rem; padding: .24rem .55rem;
   border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-soft);
@@ -223,16 +418,46 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
   border-left: 2px solid var(--accent); line-height: 1.4;
 }
 
+/* ── раскрывающиеся блоки цитат и деталей ───────────────────── */
+.details-toggle {
+  margin-top: .9rem; padding-top: .7rem; border-top: 1px dashed var(--rule-soft);
+}
+.details-toggle summary {
+  font-family: var(--sans); font-size: .74rem; color: var(--accent);
+  cursor: pointer; user-select: none; font-weight: 600; outline: none;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.details-toggle summary:hover { text-decoration: underline; }
+.details-toggle[open] summary { margin-bottom: .8rem; }
+.quote-box {
+  background: var(--paper); border: 1px solid var(--rule-soft);
+  border-left: 2px solid var(--accent); padding: .65rem .85rem;
+  font-family: var(--sans); font-size: .74rem; color: var(--ink-soft);
+  font-style: italic; line-height: 1.45; margin: .5rem 0;
+}
+.quote-box .q-meta {
+  font-style: normal; font-family: var(--mono); font-size: .64rem;
+  color: var(--ink-faint); margin-top: .4rem; text-transform: uppercase;
+}
+.extra-promo-item {
+  padding: .6rem 0; border-top: 1px dotted var(--rule-soft);
+  font-size: .8rem;
+}
+.extra-promo-item:first-child { border-top: 0; }
+
 /* ── таблица ───────────────────────────────────────────────── */
 .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--paper-2); }
-table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: .87rem; }
+table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: .87rem; }
 th, td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
 thead th {
   font-family: var(--mono); font-size: .64rem; letter-spacing: .13em;
   text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
   border-bottom: 2px solid var(--rule); position: sticky; top: 0;
-  background: var(--paper-2); white-space: nowrap;
+  background: var(--paper-2); white-space: nowrap; cursor: pointer;
+  user-select: none;
 }
+thead th:hover { color: var(--accent); }
+thead th::after { content: " ↕"; font-size: .6rem; opacity: .4; }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr { transition: background .2s; }
 tbody tr:hover { background: var(--paper); }
@@ -270,6 +495,16 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
   text-transform: uppercase; color: var(--ink-faint); margin-top: 2rem;
 }
 
+/* ── тост уведомление ──────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 100;
+  background: var(--ink); color: var(--paper); padding: .75rem 1.2rem;
+  font-family: var(--sans); font-size: .82rem; border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
+  transform: translateY(10px); transition: all .25s ease;
+}
+.toast.show { opacity: 1; transform: none; }
+
 /* ── появление при скролле ─────────────────────────────────── */
 .rise { opacity: 0; transform: translateY(18px); }
 .rise.in { animation: rise .7s cubic-bezier(.2,.7,.3,1) forwards; }
@@ -277,8 +512,23 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rise { opacity: 1; transform: none; animation: none !important; }
-  .bar-fill { animation: none; }
   * { transition: none !important; }
+}
+
+/* ── стили для печати (PDF / экспорт) ──────────────────────── */
+@media print {
+  body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+  .nav, .theme, .calc-controls, .toolbar, .toast, .calc-chips { display: none !important; }
+  .wrap { max-width: 100% !important; padding: 0 !important; }
+  .masthead { padding: 1rem 0 !important; }
+  .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .banks { grid-template-columns: repeat(2, 1fr) !important; gap: .8rem !important; }
+  .bank, .calc-card, .kpi-box { border: 1px solid #999 !important; box-shadow: none !important; page-break-inside: avoid; }
+  details { display: block !important; }
+  details summary { display: none !important; }
+  details[open] { display: block !important; }
+  table { min-width: 100% !important; }
+  footer { page-break-before: auto; }
 }
 </style>
 </head>
@@ -286,10 +536,12 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <nav class="nav">
   <div class="wrap nav-in">
-    <span class="nav-mark">Торговый&nbsp;эквайринг</span>
+    <a href="#" class="nav-mark">Торговый&nbsp;эквайринг</a>
     <div class="nav-links">
+      <a href="#calc">Калькулятор</a>
       <a href="#banks">Банки</a>
       <a href="#table">Сравнение</a>
+      <a href="#notes">Оговорки</a>
     </div>
     <button class="theme" id="theme" type="button" aria-label="Переключить тему">
       <span class="moon" aria-hidden="true">◑</span><span class="sun" aria-hidden="true">◐</span>
@@ -298,29 +550,150 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 </nav>
 
 <header class="wrap masthead">
-  <div class="kicker">Обзор рынка · 6 банков</div>
+  <div class="kicker">Мониторинг рынка · 6 банков</div>
   <h1>Специальные предложения<br>банков по <em>эквайрингу</em></h1>
   <p class="lede">
-    Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
-    дедлайны и условия подключения.
+    Независимый анализ действующих предложений шести крупнейших банков: ставки,
+    промо-периоды, стоимость терминалов, дедлайны и скрытые условия.
   </p>
+
+  <div class="kpi-grid">
+    <div class="kpi-box">
+      <span class="label">Лучшая ставка</span>
+      <span class="val good">0,3%</span>
+      <span class="sub">минимальная по рынку</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Банков в обзоре</span>
+      <span class="val">6</span>
+      <span class="sub">Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Действующих акций</span>
+      <span class="val">8</span>
+      <span class="sub">промо-ставок и бонусов</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Бесплатный терминал</span>
+      <span class="val">6 / 6</span>
+      <span class="sub">банков без платы за аренду</span>
+    </div>
+  </div>
+
   <div class="meta">
-    <span>Актуально на <b>07.11.2026</b></span>
+    <span>Актуально на <b>08.11.2026</b></span>
     <span>Источники: <b>6 официальных сайтов</b></span>
-    <span>Обновлено <b class="mono">07.11.2026 06:08</b></span>
+    <span>Обновлено <b class="mono">08.11.2026 07:59</b></span>
   </div>
 </header>
 
 <main>
 
-<section id="banks" class="wrap">
+<!-- ── СЕКЦИЯ 01: КАЛЬКУЛЯТОР ───────────────────────────────── -->
+<section id="calc" class="wrap">
   <div class="head">
     <span class="num">01</span>
+    <h2>Калькулятор расходов</h2>
+    <span class="note">Введите ваш ежемесячный оборот, чтобы увидеть реальную стоимость каждого банка</span>
+  </div>
+
+  <div class="calc-card rise">
+    <div class="calc-controls">
+      <div class="calc-field">
+        <label for="turnover-slider">Месячный оборот по картам (₽)</label>
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <input type="range" id="turnover-slider" class="calc-slider" min="50000" max="5000000" step="50000" value="500000">
+            <span id="turnover-display" class="calc-val-display">500 000 ₽</span>
+          </div>
+          <div class="calc-chips">
+            <button type="button" class="calc-chip" data-val="100000">100 тыс.</button>
+            <button type="button" class="calc-chip" data-val="300000">300 тыс.</button>
+            <button type="button" class="calc-chip on" data-val="500000">500 тыс.</button>
+            <button type="button" class="calc-chip" data-val="1000000">1 млн</button>
+            <button type="button" class="calc-chip" data-val="2000000">2 млн</button>
+            <button type="button" class="calc-chip" data-val="5000000">5 млн</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-options">
+        <label class="opt-label">
+          <input type="checkbox" id="calc-is-new" checked>
+          <span>Новый клиент (учитывать приветственные промо-акции)</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="calc-terminal-needed" checked>
+          <span>Нужен POS-терминал от банка</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="calc-results" class="calc-results-grid">
+      <!-- Генерируется на клиенте скриптом -->
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ── СЕКЦИЯ 02: БАНКИ И ФИЛЬТРЫ ───────────────────────────── -->
+<section id="banks" class="wrap">
+  <div class="head">
+    <span class="num">02</span>
     <h2>Предложения банков</h2>
     <span class="note">Зелёным отмечена лучшая ставка на рынке</span>
   </div>
-  <div class="banks">
-    <article class="bank rise" style="--bar: #21A038">
+
+  <div class="toolbar rise">
+    <div class="tool-top">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="bank-search" placeholder="Поиск по названию банка, условиям, акциям... (нажмите /)" autocomplete="off">
+        <span class="search-kbd">/</span>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn" id="btn-copy" title="Скопировать сводку всех тарифов в буфер">
+          <span>📋</span> Скопировать сводку
+        </button>
+        <button type="button" class="tool-btn" id="btn-csv" title="Скачать таблицу в формате CSV для Excel">
+          <span>📥</span> Скачать CSV
+        </button>
+        <button type="button" class="tool-btn" id="btn-print" title="Печать или экспорт страницы в PDF" onclick="window.print()">
+          <span>🖨️</span> Печать / PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="tool-filters">
+      <span class="filter-label">Фильтр:</span>
+      <button type="button" class="filter-pill on" data-filter="all">Все (6)</button>
+      <button type="button" class="filter-pill" data-filter="promos">🔥 С акциями</button>
+      <button type="button" class="filter-pill" data-filter="free-terminal">🎁 Бесплатный терминал</button>
+      <button type="button" class="filter-pill" data-filter="fast-payout">⚡ Быстрое зачисление</button>
+      <button type="button" class="filter-pill" data-filter="rate-low">👍 Ставка ≤ 1%</button>
+
+      <div class="sort-wrap">
+        <span class="filter-label">Сортировка:</span>
+        <select id="bank-sort" class="sort-select">
+          <option value="rate">По лучшей ставке (min → max)</option>
+          <option value="name">По алфавиту</option>
+          <option value="promos">По числу акций</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="banks" id="banks-grid">
+    <article class="bank rise"
+             id="bank-sber"
+             data-id="sber"
+             data-name="сбербанк"
+             data-rate="0.3"
+             data-promos="3"
+             data-free-terminal="1"
+             data-fast-payout="0"
+             style="--bar: #21A038">
       <h3>Сбербанк</h3>
       <a class="url" href="https://www.sberbank.ru/ru/s_m_business/bankingservice/acquiring_total" target="_blank" rel="noopener">https://www.sberbank.ru/ru/s_m_business/bankingservice/acquiring_total</a>
 
@@ -336,21 +709,64 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 <div class="promo-note">1% при использовании банковской карты на физическом носителе и NFC на оборот до 300 000 ₽/мес на 3 месяца</div>      <ul class="cond">
 <li>На оборот до 300 000 рублей в месяц на ИНН</li><li>В течение 3 календарных месяцев, включая месяц заключения договора</li>      </ul>
 
-      <ul class="cond">
-        <li><b>Скидка 50% на фискальный накопитель</b> — Скидка 50% на фискальный накопитель</li>
-        <li><b>Компенсация 50% НДС на комиссию за торговый эквайринг</b> — Вернем половину НДС на комиссию за торговый эквайринг</li>
-      </ul>
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">0,3%</span></dd>
-        <dt>До конца акции</dt><dd><span class="mono">54 дн.</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ первые 3 мес.</span></dd>
+        <dt>Зачисление</dt><dd><span>До 2 раз в день</span></dd>
+        <dt>До конца акции</dt><dd><span class="mono">53 дн.</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Зачисление выручки до двух раз в день</li><li>Поддержка 24/7</li><li>Оплата частями</li>      </ul>
 
-<div class="flag">Минимальная ставка от 0,3% применяется к оплате по SberPay QR, улыбкой и Вжух, в то время как ставка при оплате банковскими картами составляет 1%.</div>    </article>
-    <article class="bank rise" style="--bar: #EF3124">
+<div class="flag">Минимальная ставка от 0,3% применяется к оплате по SberPay QR, улыбкой и Вжух, в то время как ставка при оплате банковскими картами составляет 1%.</div>
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «от 0,3%процентная ставка без учёта НДС»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 07.11.2026</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все действующие акции (3):</div>
+          <div class="extra-promo-item">
+            <b>Специальное предложение по эквайрингу</b>
+<span class="mono" style="color:var(--good);font-weight:700;"> 1%</span><div style="color:var(--ink-soft);font-size:.75rem;">1% при использовании банковской карты на физическом носителе и NFC на оборот до 300 000 ₽/мес на 3 месяца</div><div style="color:var(--ink-faint);font-size:.7rem;">Срок: до 31.08.2027</div>            <ul class="cond" style="margin:.4rem 0 0;">
+<li>На оборот до 300 000 рублей в месяц на ИНН</li><li>В течение 3 календарных месяцев, включая месяц заключения договора</li>            </ul>
+            <div class="quote-box" style="margin-top:.4rem;">«Срок действия специального предложения — с 01.08.2026 по 31.08.2027 (включительно) согласно условиям, размещённым на официальном сайте банка.»</div>
+          </div>
+          <div class="extra-promo-item">
+            <b>Скидка 50% на фискальный накопитель</b>
+<div style="color:var(--ink-soft);font-size:.75rem;">Скидка 50% на фискальный накопитель</div><div style="color:var(--ink-faint);font-size:.7rem;">Срок: до 31.12.2026</div>            <ul class="cond" style="margin:.4rem 0 0;">
+<li>Подключить эквайринг в Сбере</li><li>Арендовать онлайн-кассу по тарифу «Оптимальный»</li>            </ul>
+            <div class="quote-box" style="margin-top:.4rem;">«С 1 октября по 31 декабря 2026 подключите эквайринг в Сбере и арендуйте онлайн-кассу по тарифу «Оптимальный». Акция для новых клиентов»</div>
+          </div>
+          <div class="extra-promo-item">
+            <b>Компенсация 50% НДС на комиссию за торговый эквайринг</b>
+<div style="color:var(--ink-soft);font-size:.75rem;">Вернем половину НДС на комиссию за торговый эквайринг</div><div style="color:var(--ink-faint);font-size:.7rem;">Срок: до 31.12.2026</div>            <ul class="cond" style="margin:.4rem 0 0;">
+<li>ИП или юрлицо не является плательщиком НДС на дату выплаты возмещения</li><li>Общий период акции — с 10.03.2026 по 31.12.2026</li>            </ul>
+            <div class="quote-box" style="margin-top:.4rem;">«Общий период акции — с 10.03.2026 по 31.12.2026.»</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>Зачисление выручки до двух раз в день</li><li>Поддержка 24/7</li><li>Оплата частями</li><li>Приём чаевых через СберЧаевые</li><li>Управление в личном кабинете</li><li>Сервисная плата за терминал 0 ₽ в первые 3 месяца</li>          </ul>
+
+          <div style="font-size:.75rem;color:var(--ink-soft);margin-top:.5rem;">
+            <b>НДС:</b> Возмещение 50% НДС на комиссию за торговый эквайринг для ИП или юрлиц, не являющихся плательщиками НДС, с годовым оборотом менее 20 млн рублей.
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="bank rise"
+             id="bank-alfa"
+             data-id="alfa"
+             data-name="альфа-банк"
+             data-rate="1.0"
+             data-promos="1"
+             data-free-terminal="1"
+             data-fast-payout="0"
+             style="--bar: #EF3124">
       <h3>Альфа-Банк</h3>
       <a class="url" href="https://alfabank.ru/sme/payservice/" target="_blank" rel="noopener">https://alfabank.ru/sme/payservice/</a>
 
@@ -366,16 +782,48 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 <div class="promo-note">Льготный тариф на 6 месяцев, стоимость зависит от сферы деятельности и оборота</div>      <ul class="cond">
 <li>Вариант обслуживания зависит от сферы деятельности и оборота в месяц</li>      </ul>
 
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">1%</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ (бесплатно)</span></dd>
+        <dt>Зачисление</dt><dd><span>1 рабочий день</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>0 ₽ за аренду терминала</li><li>Бесплатная доставка, настройка и обучение работе с терминалом</li><li>Приём платежей со смартфона или планшета через AlfaPOS и AlfaCASH</li>      </ul>
 
+
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «Комиссия от 1%»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 07.11.2026</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все действующие акции (1):</div>
+          <div class="extra-promo-item">
+            <b>Льготный тариф на 6 месяцев</b>
+<div style="color:var(--ink-soft);font-size:.75rem;">Льготный тариф на 6 месяцев, стоимость зависит от сферы деятельности и оборота</div>            <ul class="cond" style="margin:.4rem 0 0;">
+<li>Вариант обслуживания зависит от сферы деятельности и оборота в месяц</li>            </ul>
+            <div class="quote-box" style="margin-top:.4rem;">«Есть льготный тариф на 6 месяцев.»</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>0 ₽ за аренду терминала</li><li>Бесплатная доставка, настройка и обучение работе с терминалом</li><li>Приём платежей со смартфона или планшета через AlfaPOS и AlfaCASH</li><li>Круглосуточная техподдержка 24/7</li>          </ul>
+
+        </div>
+      </details>
     </article>
-    <article class="bank rise" style="--bar: #0E4C8B">
+    <article class="bank rise"
+             id="bank-gpb"
+             data-id="gpb"
+             data-name="газпромбанк"
+             data-rate="99"
+             data-promos="0"
+             data-free-terminal="1"
+             data-fast-payout="1"
+             style="--bar: #0E4C8B">
       <h3>Газпромбанк</h3>
       <a class="url" href="https://www.gazprombank.ru/business/trade-acquiring/" target="_blank" rel="noopener">https://www.gazprombank.ru/business/trade-acquiring/</a>
 
@@ -385,20 +833,45 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </div>
 
       <div class="tags">
-<span class="tag">⚠️ данные от 31.10.2026</span>      </div>
+      </div>
 
       <div class="promo-note">Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота</div>
 
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">—</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ / в тарифе</span></dd>
+        <dt>Зачисление</dt><dd><span>День в день</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Бесплатная доставка и настройка терминала</li><li>Техническая поддержка 24/7</li><li>Помощь персонального менеджера</li>      </ul>
 
-<div class="flag">Конкретные цифровые процентные ставки торгового эквайринга на странице не приведены, тарифы указаны как индивидуальные.</div>    </article>
-    <article class="bank rise" style="--bar: #0A2896">
+<div class="flag">Конкретные цифровые процентные ставки торгового эквайринга на странице не приведены, тарифы указаны как индивидуальные.</div>
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 08.11.2026</div>
+          </div>
+
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>Бесплатная доставка и настройка терминала</li><li>Техническая поддержка 24/7</li><li>Помощь персонального менеджера</li><li>Зачисление выручки день в день, даже в выходные дни</li>          </ul>
+
+        </div>
+      </details>
+    </article>
+    <article class="bank rise"
+             id="bank-vtb"
+             data-id="vtb"
+             data-name="втб"
+             data-rate="1.3"
+             data-promos="0"
+             data-free-terminal="1"
+             data-fast-payout="0"
+             style="--bar: #0A2896">
       <h3>ВТБ</h3>
       <a class="url" href="https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/" target="_blank" rel="noopener">https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/</a>
 
@@ -412,16 +885,41 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
       <div class="promo-note">Ставка при зачислении средств на счет ВТБ (приведена в качестве примера для категорий «авиалинии» и «заведения быстрого питания»).</div>
 
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">1,3%</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ (бесплатно)</span></dd>
+        <dt>Зачисление</dt><dd><span>1 рабочий день</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Бесплатное подключение услуги</li><li>Аренда терминала от 0 ₽</li><li>Зачисление выручки до 4 раз в течение дня</li>      </ul>
 
-<div class="flag">Указанная ставка 1,3% не является публичной офертой и приведена для категорий «авиалинии» и «заведения быстрого питания»; тарифы рассчитываются в индивидуальном порядке.</div>    </article>
-    <article class="bank rise" style="--bar: #FFDD2D">
+<div class="flag">Указанная ставка 1,3% не является публичной офертой и приведена для категорий «авиалинии» и «заведения быстрого питания»; тарифы рассчитываются в индивидуальном порядке.</div>
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «Ставка при зачислении средств на счет ВТБот 1,3%»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 07.11.2026</div>
+          </div>
+
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>Бесплатное подключение услуги</li><li>Аренда терминала от 0 ₽</li><li>Зачисление выручки до 4 раз в течение дня</li><li>Бесплатная связь для терминала</li><li>Круглосуточная поддержка 24/7</li><li>Бесплатный ремонт и замена терминала</li>          </ul>
+
+        </div>
+      </details>
+    </article>
+    <article class="bank rise"
+             id="bank-tbank"
+             data-id="tbank"
+             data-name="т-банк"
+             data-rate="1.2"
+             data-promos="4"
+             data-free-terminal="1"
+             data-fast-payout="0"
+             style="--bar: #FFDD2D">
       <h3>Т-Банк</h3>
       <a class="url" href="https://www.tbank.ru/business/payments/" target="_blank" rel="noopener">https://www.tbank.ru/business/payments/</a>
 
@@ -435,21 +933,63 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
       <div class="promo-title">Акция для категории «Супермаркеты»</div>
 
-      <ul class="cond">
-        <li><b>Акция для категорий «Аптеки и больницы»</b></li>
-        <li><b>Акция для категории «Фастфуд»</b></li>
-        <li><b>Онлайн-кассы в аренду за 0 ₽</b> — Аренда за 0 ₽</li>
-      </ul>
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">1,2%</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ (бесплатно)</span></dd>
+        <dt>Зачисление</dt><dd><span>1 рабочий день</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Pay to phone: торговый эквайринг в смартфоне</li><li>Онлайн-кассы в аренду за 0 ₽</li><li>Без минимального платежа</li>      </ul>
 
-<div class="flag">Внизу страницы упоминаются акции для категорий «Супермаркеты», «Аптеки и больницы» и «Фастфуд», однако их полные условия на самой странице не раскрыты.</div>    </article>
-    <article class="bank rise" style="--bar: #7B2FBE">
+<div class="flag">Внизу страницы упоминаются акции для категорий «Супермаркеты», «Аптеки и больницы» и «Фастфуд», однако их полные условия на самой странице не раскрыты.</div>
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «Комиссия за торговый эквайринг — от 1,2%.»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 07.11.2026</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все действующие акции (4):</div>
+          <div class="extra-promo-item">
+            <b>Акция для категории «Супермаркеты»</b>
+            <div class="quote-box" style="margin-top:.4rem;">«Полные условия акции для категории «Супермаркеты»»</div>
+          </div>
+          <div class="extra-promo-item">
+            <b>Акция для категорий «Аптеки и больницы»</b>
+            <div class="quote-box" style="margin-top:.4rem;">«Полные условия акции для категорий «Аптеки и больницы»»</div>
+          </div>
+          <div class="extra-promo-item">
+            <b>Акция для категории «Фастфуд»</b>
+            <div class="quote-box" style="margin-top:.4rem;">«Полные условия акции для категории «Фастфуд»»</div>
+          </div>
+          <div class="extra-promo-item">
+            <b>Онлайн-кассы в аренду за 0 ₽</b>
+<div style="color:var(--ink-soft);font-size:.75rem;">Аренда за 0 ₽</div>            <ul class="cond" style="margin:.4rem 0 0;">
+<li>Встроенный эквайринг и прием оплаты по QR-коду</li>            </ul>
+            <div class="quote-box" style="margin-top:.4rem;">«Онлайн-кассы в аренду за 0 ₽»</div>
+          </div>
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>Pay to phone: торговый эквайринг в смартфоне</li><li>Онлайн-кассы в аренду за 0 ₽</li><li>Без минимального платежа</li><li>Индивидуальные условия для бизнеса с оборотом от 120 млн ₽ в год</li>          </ul>
+
+          <div style="font-size:.75rem;color:var(--ink-soft);margin-top:.5rem;">
+            <b>НДС:</b> Размеры комиссий указаны без НДС. С 1 января 2026 года на комиссию за услуги эквайринга начисляется НДС 22%.
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="bank rise"
+             id="bank-bspb"
+             data-id="bspb"
+             data-name="банк санкт-петербург"
+             data-rate="0.9"
+             data-promos="0"
+             data-free-terminal="1"
+             data-fast-payout="1"
+             style="--bar: #7B2FBE">
       <h3>Банк Санкт-Петербург</h3>
       <a class="url" href="https://www.bspb.ru/business/acquiring/merchant" target="_blank" rel="noopener">https://www.bspb.ru/business/acquiring/merchant</a>
 
@@ -463,100 +1003,139 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
       <div class="promo-note">Размер комиссии от 0,9% на оборудовании банка, зависит от сферы деятельности</div>
 
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">0,9%</span></dd>
+        <dt>Терминал</dt><dd><span>0 ₽ (от 300 000 ₽/мес) / 1 000 ₽</span></dd>
+        <dt>Зачисление</dt><dd><span>До 5 раз в день</span></dd>
       </dl>
 
       <ul class="cond" style="margin-top:.9rem;margin-bottom:0">
 <li>Оперативная установка от одного рабочего дня</li><li>Скорость зачисления выручки до 5 раз в течение операционного дня</li><li>Техническая поддержка 24/7</li>      </ul>
 
-<div class="flag">При обороте меньше 300 тыс ₽ взимается комиссия 1 тыс ₽ на терминал</div>    </article>
+<div class="flag">При обороте меньше 300 тыс ₽ взимается комиссия 1 тыс ₽ на терминал</div>
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          <div class="quote-box">
+            «размер комиссии от 0,9%»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено 07.11.2026</div>
+          </div>
+
+
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+<li>Оперативная установка от одного рабочего дня</li><li>Скорость зачисления выручки до 5 раз в течение операционного дня</li><li>Техническая поддержка 24/7</li><li>Бесплатная аренда терминала на срок действия договора</li>          </ul>
+
+        </div>
+      </details>
+    </article>
   </div>
 </section>
 
 <hr class="rule">
 
+<!-- ── СЕКЦИЯ 03: ТАБЛИЦА СРАВНЕНИЯ ─────────────────────────── -->
 <section id="table" class="wrap">
   <div class="head">
-    <span class="num">02</span>
+    <span class="num">03</span>
     <h2>Сводное сравнение</h2>
-    <span class="note">Прокрутите таблицу вбок на узком экране</span>
+    <span class="note">Нажмите на заголовок колонки для сортировки. Прокрутите вбок на мобильном</span>
   </div>
   <div class="scroller rise">
-    <table>
+    <table id="compare-table">
       <thead>
         <tr>
-          <th>Банк</th>
-          <th>Главное предложение</th>
-          <th>Ставка</th>
-          <th>Срок</th>
+          <th data-sort-key="name">Банк</th>
+          <th data-sort-key="promo">Главное предложение</th>
+          <th data-sort-key="best">Лучшая ставка</th>
+          <th data-sort-key="base">Базовая</th>
+          <th data-sort-key="terminal">Терминал</th>
+          <th data-sort-key="payout">Зачисление</th>
+          <th data-sort-key="deadline">Срок акции</th>
           <th>НДС</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr data-name="Сбербанк" data-rate="0.3">
           <td class="name" style="--bar: #21A038">Сбербанк</td>
           <td>
 Специальное предложение по эквайрингу
 <span class="sub">1% при использовании банковской карты на физическом носителе и NFC на оборот до 300 000 ₽/мес на 3 месяца</span>          </td>
           <td><span class="num-cell best">0,3%</span></td>
+          <td><span class="num-cell">0,3%</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ первые 3 мес.</span></td>
+          <td><span class="sub" style="margin-top:0">До 2 раз в день</span></td>
           <td>
 <span class="num-cell">до 31.12.2026</span>
-              <span class="sub">54 дн.</span>
+              <span class="sub">53 дн.</span>
           </td>
           <td>
 <span class="sub" style="margin-top:0">Возмещение 50% НДС на комиссию за торговый эквайринг для ИП или юрлиц, не являющихся плательщиками НДС, с годовым оборотом менее 20 млн рублей.</span>
           </td>
         </tr>
-        <tr>
+        <tr data-name="Альфа-Банк" data-rate="1.0">
           <td class="name" style="--bar: #EF3124">Альфа-Банк</td>
           <td>
 Льготный тариф на 6 месяцев
 <span class="sub">Льготный тариф на 6 месяцев, стоимость зависит от сферы деятельности и оборота</span>          </td>
           <td><span class="num-cell ">1%</span></td>
+          <td><span class="num-cell">1%</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ (бесплатно)</span></td>
+          <td><span class="sub" style="margin-top:0">1 рабочий день</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
           <td>
 —          </td>
         </tr>
-        <tr>
+        <tr data-name="Газпромбанк" data-rate="99">
           <td class="name" style="--bar: #0E4C8B">Газпромбанк</td>
           <td>
 <span class="sub">Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота</span>          </td>
           <td><span class="num-cell ">—</span></td>
+          <td><span class="num-cell">—</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ / в тарифе</span></td>
+          <td><span class="sub" style="margin-top:0">День в день</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
           <td>
 —          </td>
         </tr>
-        <tr>
+        <tr data-name="ВТБ" data-rate="1.3">
           <td class="name" style="--bar: #0A2896">ВТБ</td>
           <td>
 <span class="sub">Ставка при зачислении средств на счет ВТБ (приведена в качестве примера для категорий «авиалинии» и «заведения быстрого питания»).</span>          </td>
           <td><span class="num-cell ">1,3%</span></td>
+          <td><span class="num-cell">1,3%</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ (бесплатно)</span></td>
+          <td><span class="sub" style="margin-top:0">1 рабочий день</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
           <td>
 —          </td>
         </tr>
-        <tr>
+        <tr data-name="Т-Банк" data-rate="1.2">
           <td class="name" style="--bar: #FFDD2D">Т-Банк</td>
           <td>
 Акция для категории «Супермаркеты»
           </td>
           <td><span class="num-cell ">1,2%</span></td>
+          <td><span class="num-cell">1,2%</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ (бесплатно)</span></td>
+          <td><span class="sub" style="margin-top:0">1 рабочий день</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
           <td>
 <span class="sub" style="margin-top:0">Размеры комиссий указаны без НДС. С 1 января 2026 года на комиссию за услуги эквайринга начисляется НДС 22%.</span>
           </td>
         </tr>
-        <tr>
+        <tr data-name="Банк Санкт-Петербург" data-rate="0.9">
           <td class="name" style="--bar: #7B2FBE">Банк Санкт-Петербург</td>
           <td>
 <span class="sub">Размер комиссии от 0,9% на оборудовании банка, зависит от сферы деятельности</span>          </td>
           <td><span class="num-cell ">0,9%</span></td>
+          <td><span class="num-cell">0,9%</span></td>
+          <td><span class="sub" style="margin-top:0">0 ₽ (от 300 000 ₽/мес) / 1 000 ₽</span></td>
+          <td><span class="sub" style="margin-top:0">До 5 раз в день</span></td>
           <td>
 <span class="sub">бессрочно</span>          </td>
           <td>
@@ -565,9 +1144,20 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </tbody>
     </table>
   </div>
+</section>
+
+<hr class="rule">
+
+<!-- ── СЕКЦИЯ 04: ОГОВОРКИ ───────────────────────────────────── -->
+<section id="notes" class="wrap">
+  <div class="head">
+    <span class="num">04</span>
+    <h2>Оговорки и расхождения</h2>
+    <span class="note">Важные юридические детали, тарифные нюансы и завершённые акции</span>
+  </div>
 
   <div class="notes rise">
-    <h4>Оговорки и расхождения</h4>
+    <h4>Особенности и сноски по тарифам</h4>
     <ul>
         <li><b>Сбербанк:</b> Минимальная ставка от 0,3% применяется к оплате по SberPay QR, улыбкой и Вжух, в то время как ставка при оплате банковскими картами составляет 1%.</li>
         <li><b>Сбербанк:</b> Подробные публичные и непубличные тарифы содержатся в прикреплённых PDF и XLSX файлах.</li>
@@ -585,11 +1175,10 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <footer class="wrap">
   <p class="disclaimer">
-    <strong>Информация актуальна на 07.11.2026 и не является публичной офертой.</strong>
-    Данные собраны с официальных сайтов банков автоматически и могут содержать неточности
-    из-за изменений на стороне банка. Точные тарифы, лимиты и условия участия в акциях
-    уточняйте в банке перед заключением договора. Ставки указаны без учёта индивидуальных
-    условий, которые банк может предложить по результатам рассмотрения заявки.
+    <strong>Информация актуальна на 08.11.2026 и не является публичной офертой.</strong>
+    Данные собраны с официальных сайтов банков автоматически через Playwright и Gemini с верификацией
+    дословных цитат. Тарифы могут содержать индивидуальные надбавки в зависимости от региона, оборота
+    и сферы деятельности компании. Точные условия уточняйте в обслуживающем банке перед заключением договора.
   </p>
   <div class="sources">
     <a href="https://www.sberbank.ru/ru/s_m_business/bankingservice/acquiring_total" target="_blank" rel="noopener">Сбербанк ↗</a>
@@ -600,34 +1189,398 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
     <a href="https://www.bspb.ru/business/acquiring/merchant" target="_blank" rel="noopener">Банк Санкт-Петербург ↗</a>
   </div>
   <div class="colophon">
-    Сгенерировано 07.11.2026 в 06:08 · данные от 07.11.2026
+    Сгенерировано 08.11.2026 в 07:59 · данные банков от 08.11.2026
   </div>
 </footer>
 
+<div id="toast" class="toast">Уведомление</div>
+
+<!-- Данные для клиента (ноль внешних запросов) -->
+<script id="banks-data" type="application/json">
+[{"id": "sber", "name": "Сбербанк", "color": "#21A038", "source_url": "https://www.sberbank.ru/ru/s_m_business/bankingservice/acquiring_total", "checked_at": "2026-11-07", "status": "ok", "base_rate_from": 0.3, "base_rate_note": "Процентная ставка от 0,3% без учёта НДС", "base_rate_quote": "от 0,3%процентная ставка без учёта НДС", "promos": [{"title": "Специальное предложение по эквайрингу", "rate": 1.0, "rate_note": "1% при использовании банковской карты на физическом носителе и NFC на оборот до 300 000 ₽/мес на 3 месяца", "valid_from": "2026-08-01", "valid_until": "2027-08-31", "audience": null, "conditions": ["На оборот до 300 000 рублей в месяц на ИНН", "В течение 3 календарных месяцев, включая месяц заключения договора"], "source_quote": "Срок действия специального предложения — с 01.08.2026 по 31.08.2027 (включительно) согласно условиям, размещённым на официальном сайте банка.", "ended": false}, {"title": "Скидка 50% на фискальный накопитель", "rate": null, "rate_note": "Скидка 50% на фискальный накопитель", "valid_from": "2026-10-01", "valid_until": "2026-12-31", "audience": "новым клиентам", "conditions": ["Подключить эквайринг в Сбере", "Арендовать онлайн-кассу по тарифу «Оптимальный»"], "source_quote": "С 1 октября по 31 декабря 2026 подключите эквайринг в Сбере и арендуйте онлайн-кассу по тарифу «Оптимальный». Акция для новых клиентов", "ended": false}, {"title": "Компенсация 50% НДС на комиссию за торговый эквайринг", "rate": null, "rate_note": "Вернем половину НДС на комиссию за торговый эквайринг", "valid_from": "2026-03-10", "valid_until": "2026-12-31", "audience": null, "conditions": ["ИП или юрлицо не является плательщиком НДС на дату выплаты возмещения", "Общий период акции — с 10.03.2026 по 31.12.2026"], "source_quote": "Общий период акции — с 10.03.2026 по 31.12.2026.", "ended": false}], "vat_note": "Возмещение 50% НДС на комиссию за торговый эквайринг для ИП или юрлиц, не являющихся плательщиками НДС, с годовым оборотом менее 20 млн рублей.", "extras": ["Зачисление выручки до двух раз в день", "Поддержка 24/7", "Оплата частями", "Приём чаевых через СберЧаевые", "Управление в личном кабинете", "Сервисная плата за терминал 0 ₽ в первые 3 месяца"], "notes": ["Минимальная ставка от 0,3% применяется к оплате по SberPay QR, улыбкой и Вжух, в то время как ставка при оплате банковскими картами составляет 1%.", "Подробные публичные и непубличные тарифы содержатся в прикреплённых PDF и XLSX файлах.", "Предусмотрены отдельные временные тарифы для Крыма, Севастополя, ДНР, ЛНР, Запорожской и Херсонской областей."]}, {"id": "alfa", "name": "Альфа-Банк", "color": "#EF3124", "source_url": "https://alfabank.ru/sme/payservice/", "checked_at": "2026-11-07", "status": "ok", "base_rate_from": 1.0, "base_rate_note": "Минимальная комиссия по торговому эквайрингу от 1%", "base_rate_quote": "Комиссия от 1%", "promos": [{"title": "Льготный тариф на 6 месяцев", "rate": null, "rate_note": "Льготный тариф на 6 месяцев, стоимость зависит от сферы деятельности и оборота", "valid_from": null, "valid_until": null, "audience": null, "conditions": ["Вариант обслуживания зависит от сферы деятельности и оборота в месяц"], "source_quote": "Есть льготный тариф на 6 месяцев.", "ended": false}], "vat_note": null, "extras": ["0 ₽ за аренду терминала", "Бесплатная доставка, настройка и обучение работе с терминалом", "Приём платежей со смартфона или планшета через AlfaPOS и AlfaCASH", "Круглосуточная техподдержка 24/7"], "notes": []}, {"id": "gpb", "name": "Газпромбанк", "color": "#0E4C8B", "source_url": "https://www.gazprombank.ru/business/trade-acquiring/", "checked_at": "2026-11-08", "status": "ok", "base_rate_from": null, "base_rate_note": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота", "base_rate_quote": "Индивидуальный тариф в зависимости от типа карточных продуктов, среднего чека и оборота", "promos": [], "vat_note": null, "extras": ["Бесплатная доставка и настройка терминала", "Техническая поддержка 24/7", "Помощь персонального менеджера", "Зачисление выручки день в день, даже в выходные дни"], "notes": ["Конкретные цифровые процентные ставки торгового эквайринга на странице не приведены, тарифы указаны как индивидуальные."]}, {"id": "vtb", "name": "ВТБ", "color": "#0A2896", "source_url": "https://www.vtb.ru/malyj-biznes/acquiring/torgovyy-acquiring/", "checked_at": "2026-11-07", "status": "ok", "base_rate_from": 1.3, "base_rate_note": "Ставка при зачислении средств на счет ВТБ (приведена в качестве примера для категорий «авиалинии» и «заведения быстрого питания»).", "base_rate_quote": "Ставка при зачислении средств на счет ВТБот 1,3%", "promos": [], "vat_note": null, "extras": ["Бесплатное подключение услуги", "Аренда терминала от 0 ₽", "Зачисление выручки до 4 раз в течение дня", "Бесплатная связь для терминала", "Круглосуточная поддержка 24/7", "Бесплатный ремонт и замена терминала"], "notes": ["Указанная ставка 1,3% не является публичной офертой и приведена для категорий «авиалинии» и «заведения быстрого питания»; тарифы рассчитываются в индивидуальном порядке."]}, {"id": "tbank", "name": "Т-Банк", "color": "#FFDD2D", "source_url": "https://www.tbank.ru/business/payments/", "checked_at": "2026-11-07", "status": "ok", "base_rate_from": 1.2, "base_rate_note": "от 1,2% без учета НДС", "base_rate_quote": "Комиссия за торговый эквайринг — от 1,2%.", "promos": [{"title": "Акция для категории «Супермаркеты»", "rate": null, "rate_note": null, "valid_from": null, "valid_until": null, "audience": null, "conditions": [], "source_quote": "Полные условия акции для категории «Супермаркеты»", "ended": false}, {"title": "Акция для категорий «Аптеки и больницы»", "rate": null, "rate_note": null, "valid_from": null, "valid_until": null, "audience": null, "conditions": [], "source_quote": "Полные условия акции для категорий «Аптеки и больницы»", "ended": false}, {"title": "Акция для категории «Фастфуд»", "rate": null, "rate_note": null, "valid_from": null, "valid_until": null, "audience": null, "conditions": [], "source_quote": "Полные условия акции для категории «Фастфуд»", "ended": false}, {"title": "Онлайн-кассы в аренду за 0 ₽", "rate": null, "rate_note": "Аренда за 0 ₽", "valid_from": null, "valid_until": null, "audience": null, "conditions": ["Встроенный эквайринг и прием оплаты по QR-коду"], "source_quote": "Онлайн-кассы в аренду за 0 ₽", "ended": false}], "vat_note": "Размеры комиссий указаны без НДС. С 1 января 2026 года на комиссию за услуги эквайринга начисляется НДС 22%.", "extras": ["Pay to phone: торговый эквайринг в смартфоне", "Онлайн-кассы в аренду за 0 ₽", "Без минимального платежа", "Индивидуальные условия для бизнеса с оборотом от 120 млн ₽ в год"], "notes": ["Внизу страницы упоминаются акции для категорий «Супермаркеты», «Аптеки и больницы» и «Фастфуд», однако их полные условия на самой странице не раскрыты."]}, {"id": "bspb", "name": "Банк Санкт-Петербург", "color": "#7B2FBE", "source_url": "https://www.bspb.ru/business/acquiring/merchant", "checked_at": "2026-11-07", "status": "ok", "base_rate_from": 0.9, "base_rate_note": "Размер комиссии от 0,9% на оборудовании банка, зависит от сферы деятельности", "base_rate_quote": "размер комиссии от 0,9%", "promos": [], "vat_note": null, "extras": ["Оперативная установка от одного рабочего дня", "Скорость зачисления выручки до 5 раз в течение операционного дня", "Техническая поддержка 24/7", "Бесплатная аренда терминала на срок действия договора"], "notes": ["При обороте меньше 300 тыс ₽ взимается комиссия 1 тыс ₽ на терминал", "При покупке оборудования у партнёра ставка эквайринга снижается на 0,1% от базовой комиссии"]}]
+</script>
+
 <script>
 (function () {
-  // Тема: системная по умолчанию, ручной выбор запоминается.
-  var root = document.documentElement;
-  var saved = null;
-  try { saved = localStorage.getItem('theme'); } catch (e) {}
-  var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  root.setAttribute('data-theme', saved || (sysDark ? 'dark' : 'light'));
+  'use strict';
 
-  document.getElementById('theme').addEventListener('click', function () {
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
+  // 1. Тема
+  var root = document.documentElement;
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+  var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', savedTheme || (sysDark ? 'dark' : 'light'));
+
+  var themeBtn = document.getElementById('theme');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  }
+
+  // 2. Данные банков
+  var banksData = [];
+  try {
+    banksData = JSON.parse(document.getElementById('banks-data').textContent || '[]');
+  } catch (e) {
+    console.error('Failed to parse banks data', e);
+  }
+
+  // 3. Калькулятор расходов
+  var slider = document.getElementById('turnover-slider');
+  var display = document.getElementById('turnover-display');
+  var isNewCheck = document.getElementById('calc-is-new');
+  var termNeededCheck = document.getElementById('calc-terminal-needed');
+  var resultsContainer = document.getElementById('calc-results');
+  var chips = document.querySelectorAll('.calc-chip');
+
+  function fmtRub(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  }
+
+  function calcBankCost(bank, turnover, isNew, termNeeded) {
+    var feeRate = bank.base_rate_from;
+    var promoNote = '';
+    var terminalCost = 0;
+
+    // Специфические банковские тарифные модели
+    if (bank.id === 'tbank') {
+      if (isNew) {
+        // Т-Банк: 0% на первый месяц на оборот до 300 000 руб, далее от 1.2%
+        if (turnover <= 300000) {
+          feeRate = 0.0;
+          promoNote = 'Акция 0% на первый месяц до 300 тыс. ₽';
+        } else {
+          var promoPortion = 300000 * 0.0;
+          var restPortion = (turnover - 300000) * 0.012;
+          var fee = promoPortion + restPortion;
+          feeRate = (fee / turnover) * 100;
+          promoNote = '0% на первые 300 тыс. ₽, далее 1,2%';
+        }
+      } else {
+        feeRate = bank.base_rate_from || 1.2;
+      }
+      terminalCost = 0; // В Т-Банке аренда 0 ₽
+    } else if (bank.id === 'sber') {
+      if (isNew) {
+        // Сбер: 1% первые 3 мес на оборот до 300 000 руб
+        if (turnover <= 300000) {
+          feeRate = 1.0;
+          promoNote = 'Промо-ставка 1% на первые 3 месяца';
+        } else {
+          var feeSber = (300000 * 0.01) + ((turnover - 300000) * 0.015);
+          feeRate = (feeSber / turnover) * 100;
+          promoNote = '1% на первые 300 тыс. ₽, далее базовая';
+        }
+        terminalCost = 0;
+      } else {
+        feeRate = bank.base_rate_from || 1.5;
+        terminalCost = 0;
+      }
+    } else if (bank.id === 'alfa') {
+      if (isNew) {
+        feeRate = 1.0;
+        promoNote = 'Ставка 1% на первые 3 месяца';
+      } else {
+        feeRate = 1.4; // Базовая шкала Альфы от оборота
+      }
+      terminalCost = 0; // Бесплатная аренда
+    } else if (bank.id === 'bspb') {
+      feeRate = bank.base_rate_from || 0.9;
+      // В БСПБ: при обороте < 300 000 руб на терминале плата 1000 руб
+      if (termNeeded && turnover < 300000) {
+        terminalCost = 1000;
+        promoNote = 'Плата 1000 ₽ за терминал при обороте < 300 тыс. ₽';
+      } else {
+        terminalCost = 0;
+      }
+    } else if (bank.id === 'vtb') {
+      feeRate = bank.base_rate_from || 1.3;
+      terminalCost = 0;
+      promoNote = 'Тариф от 1,3% (для фастфуда/авиабилетов)';
+    } else if (bank.id === 'gpb') {
+      // ГПБ: индивидуальный расчет (рыночный бенчмарк ~1.3%)
+      feeRate = 1.3;
+      terminalCost = 0;
+      promoNote = 'Индивидуальный расчет по обороту';
+    } else {
+      feeRate = bank.base_rate_from || 1.5;
+      terminalCost = 0;
+    }
+
+    var feeAmount = (turnover * (feeRate / 100));
+    var totalCost = feeAmount + terminalCost;
+
+    return {
+      bank: bank,
+      feeRate: feeRate,
+      feeAmount: feeAmount,
+      terminalCost: terminalCost,
+      totalCost: totalCost,
+      promoNote: promoNote
+    };
+  }
+
+  function updateCalculator() {
+    if (!slider || !resultsContainer || !banksData.length) return;
+    var turnover = parseInt(slider.value, 10);
+    var isNew = isNewCheck ? isNewCheck.checked : true;
+    var termNeeded = termNeededCheck ? termNeededCheck.checked : true;
+
+    display.textContent = fmtRub(turnover);
+
+    var calculated = banksData.map(function (b) {
+      return calcBankCost(b, turnover, isNew, termNeeded);
+    });
+
+    // Сортировка по возрастанию итоговых затрат
+    calculated.sort(function (a, b) {
+      return a.totalCost - b.totalCost;
+    });
+
+    var maxCost = calculated[calculated.length - 1].totalCost;
+
+    resultsContainer.innerHTML = '';
+    calculated.forEach(function (res, idx) {
+      var card = document.createElement('div');
+      var isWin = idx === 0;
+      card.className = 'calc-result-card' + (isWin ? ' is-winner' : '');
+      card.style.setProperty('--bar-vis', res.bank.color || '#333');
+
+      var savings = maxCost - res.totalCost;
+      var savingsHtml = (savings > 100 && !isWin)
+        ? '<div class="calc-savings">Экономия ' + fmtRub(savings) + '/мес vs самого дорогого</div>'
+        : (isWin ? '<div class="calc-savings" style="background:var(--good-dim);color:var(--good);">★ Самый выгодный вариант на этом обороте!</div>' : '');
+
+      card.innerHTML =
+        '<div class="calc-rank ' + (isWin ? 'win-badge' : '') + '">#' + (idx + 1) + ' в рейтинге выгоды</div>' +
+        '<div class="calc-card-name">' + res.bank.name + '</div>' +
+        '<div class="calc-total-box">' +
+          '<span class="calc-total-sum ' + (isWin ? 'win-sum' : '') + '">' + fmtRub(res.totalCost) + '</span>' +
+          '<span class="calc-total-period">/ мес</span>' +
+        '</div>' +
+        '<div class="calc-breakdown">' +
+          '<div class="calc-breakdown-row"><span>Комиссия (~' + res.feeRate.toFixed(2).replace('.', ',') + '%):</span><b>' + fmtRub(res.feeAmount) + '</b></div>' +
+          '<div class="calc-breakdown-row"><span>Терминал:</span><b>' + (res.terminalCost ? fmtRub(res.terminalCost) : '0 ₽') + '</b></div>' +
+        '</div>' +
+        savingsHtml +
+        (res.promoNote ? '<div class="calc-note">Условие: ' + res.promoNote + '</div>' : '');
+
+      resultsContainer.appendChild(card);
+    });
+  }
+
+  if (slider) {
+    slider.addEventListener('input', updateCalculator);
+    chips.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        chips.forEach(function (c) { c.classList.remove('on'); });
+        btn.classList.add('on');
+        slider.value = btn.getAttribute('data-val');
+        updateCalculator();
+      });
+    });
+  }
+  if (isNewCheck) isNewCheck.addEventListener('change', updateCalculator);
+  if (termNeededCheck) termNeededCheck.addEventListener('change', updateCalculator);
+  updateCalculator();
+
+  // 4. Поиск и Фильтрация карточек
+  var searchInput = document.getElementById('bank-search');
+  var filterPills = document.querySelectorAll('.filter-pill');
+  var sortSelect = document.getElementById('bank-sort');
+  var banksGrid = document.getElementById('banks-grid');
+  var cards = [].slice.call(document.querySelectorAll('.bank'));
+
+  var currentFilter = 'all';
+  var currentSearch = '';
+
+  function applyFilterAndSort() {
+    var query = currentSearch.toLowerCase().trim();
+
+    cards.forEach(function (card) {
+      var name = card.getAttribute('data-name') || '';
+      var cardText = card.innerText.toLowerCase();
+      var matchesSearch = !query || name.indexOf(query) !== -1 || cardText.indexOf(query) !== -1;
+
+      var matchesFilter = true;
+      if (currentFilter === 'promos') {
+        matchesFilter = (parseInt(card.getAttribute('data-promos'), 10) || 0) > 0;
+      } else if (currentFilter === 'free-terminal') {
+        matchesFilter = card.getAttribute('data-free-terminal') === '1';
+      } else if (currentFilter === 'fast-payout') {
+        matchesFilter = card.getAttribute('data-fast-payout') === '1';
+      } else if (currentFilter === 'rate-low') {
+        matchesFilter = parseFloat(card.getAttribute('data-rate')) <= 1.0;
+      }
+
+      card.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+    });
+
+    // Сортировка
+    var sortBy = sortSelect ? sortSelect.value : 'rate';
+    var sorted = cards.slice().sort(function (a, b) {
+      if (sortBy === 'rate') {
+        return parseFloat(a.getAttribute('data-rate')) - parseFloat(b.getAttribute('data-rate'));
+      } else if (sortBy === 'name') {
+        return (a.getAttribute('data-name') || '').localeCompare(b.getAttribute('data-name') || '');
+      } else if (sortBy === 'promos') {
+        return (parseInt(b.getAttribute('data-promos'), 10) || 0) - (parseInt(a.getAttribute('data-promos'), 10) || 0);
+      }
+      return 0;
+    });
+
+    sorted.forEach(function (c) { banksGrid.appendChild(c); });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      currentSearch = searchInput.value;
+      applyFilterAndSort();
+    });
+  }
+
+  filterPills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      filterPills.forEach(function (p) { p.classList.remove('on'); });
+      pill.classList.add('on');
+      currentFilter = pill.getAttribute('data-filter');
+      applyFilterAndSort();
+    });
   });
 
-  // Появление блоков при скролле + подсветка активного пункта навигации.
-  var rise = document.querySelectorAll('.rise');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', applyFilterAndSort);
+  }
+
+  // Горячая клавиша / для поиска
+  window.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      currentSearch = '';
+      applyFilterAndSort();
+      searchInput.blur();
+    }
+  });
+
+  // 5. Тост-уведомления
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 2800);
+  }
+
+  // 6. Скопировать сводку
+  var btnCopy = document.getElementById('btn-copy');
+  if (btnCopy) {
+    btnCopy.addEventListener('click', function () {
+      var lines = [
+        'Сводка спецпредложений по торговому эквайрингу на ' + '08.11.2026:',
+        ''
+      ];
+      banksData.forEach(function (b) {
+        var promoPart = (b.promos && b.promos.length) ? (' (акция: ' + b.promos[0].title + ')') : '';
+        var rateStr = (b.base_rate_from !== null) ? (b.base_rate_from + '%') : 'индивидуально';
+        lines.push('• ' + b.name + ': ставка от ' + rateStr + promoPart);
+      });
+      lines.push('');
+      lines.push('Подробнее: ' + window.location.href);
+
+      navigator.clipboard.writeText(lines.join('\n')).then(function () {
+        showToast('Сводка тарифов скопирована в буфер обмена!');
+      }).catch(function () {
+        showToast('Не удалось скопировать сводку.');
+      });
+    });
+  }
+
+  // 7. Скачать CSV
+  var btnCsv = document.getElementById('btn-csv');
+  if (btnCsv) {
+    btnCsv.addEventListener('click', function () {
+      var rows = [
+        ['Банк', 'Лучшая ставка (%)', 'Базовая ставка (%)', 'Действующих акций', 'Срок акции', 'Ссылка']
+      ];
+      banksData.forEach(function (b) {
+        var best = (b.base_rate_from !== null) ? b.base_rate_from : '';
+        var deadline = '';
+        if (b.promos && b.promos.length && b.promos[0].valid_until) {
+          deadline = b.promos[0].valid_until;
+        }
+        rows.push([
+          '"' + b.name + '"',
+          best,
+          b.base_rate_from || '',
+          (b.promos ? b.promos.length : 0),
+          deadline,
+          b.source_url
+        ]);
+      });
+
+      var csvContent = '\uFEFF' + rows.map(function (e) { return e.join(';'); }).join('\n');
+      var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'acquiring_rates_' + new Date().toISOString().slice(0,10) + '.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV файл сформирован и загружен!');
+    });
+  }
+
+  // 8. Сортировка таблицы по колонкам
+  var table = document.getElementById('compare-table');
+  if (table) {
+    var headers = table.querySelectorAll('th[data-sort-key]');
+    var sortDir = 1;
+    headers.forEach(function (th) {
+      th.addEventListener('click', function () {
+        var colIndex = Array.prototype.indexOf.call(th.parentNode.children, th);
+        var tbody = table.querySelector('tbody');
+        var trs = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        sortDir = -sortDir;
+
+        trs.sort(function (a, b) {
+          var aText = (a.children[colIndex].textContent || '').trim();
+          var bText = (b.children[colIndex].textContent || '').trim();
+          var aNum = parseFloat(aText.replace(',', '.'));
+          var bNum = parseFloat(bText.replace(',', '.'));
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return (aNum - bNum) * sortDir;
+          }
+          return aText.localeCompare(bText) * sortDir;
+        });
+
+        trs.forEach(function (tr) { tbody.appendChild(tr); });
+        showToast('Таблица отсортирована');
+      });
+    });
+  }
+
+  // 9. Анимация появления блоков при скролле
+  var riseEls = document.querySelectorAll('.rise');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       });
-    }, { rootMargin: '0px 0px -12% 0px' });
-    rise.forEach(function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    riseEls.forEach(function (el) { io.observe(el); });
 
     var links = [].slice.call(document.querySelectorAll('.nav-links a'));
     var spy = new IntersectionObserver(function (entries) {
@@ -637,11 +1590,12 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id);
         });
       });
-    }, { rootMargin: '-45% 0px -50% 0px' });
+    }, { rootMargin: '-40% 0px -55% 0px' });
     document.querySelectorAll('main section[id]').forEach(function (s) { spy.observe(s); });
   } else {
-    rise.forEach(function (el) { el.classList.add('in'); });
+    riseEls.forEach(function (el) { el.classList.add('in'); });
   }
+
 })();
 </script>
 </body>

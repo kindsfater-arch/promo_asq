@@ -142,10 +142,18 @@ def looks_broken(text: str) -> str:
 PLAIN_TIMEOUT = 30
 PLAIN_HEADERS = {
     "User-Agent": UA,
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
     "Accept-Encoding": "gzip, identity",
-    "Connection": "close",
+    "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"macOS"',
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "Connection": "keep-alive",
 }
 
 BLOCK_TAGS = re.compile(
@@ -227,7 +235,7 @@ def fetch_one(page, name: str, url: str) -> str:
             # и добавляем паузу: без неё в снимок попадал только 1% из
             # юридической сноски, а «Ставка от 0,3%» терялась.
             try:
-                page.wait_for_load_state("networkidle", timeout=20_000)
+                page.wait_for_load_state("networkidle", timeout=8_000)
             except PWTimeout:
                 pass
             page.wait_for_timeout(SETTLE_MS)

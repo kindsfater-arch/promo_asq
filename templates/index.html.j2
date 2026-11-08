@@ -4,55 +4,58 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Специальные предложения банков по эквайрингу · {{ today|ru_date }}</title>
-<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ.">
+<meta name="description" content="Действующие спецпредложения банков по торговому эквайрингу: Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ. Калькулятор расходов, сравнение ставок, проверенные цитаты.">
 <style>
 /* ─────────────────────────────────────────────────────────────
    Финансовый бюллетень: бумага, чернила, табличные цифры.
    Ноль внешних зависимостей — файл открывается без сети.
    ───────────────────────────────────────────────────────────── */
 :root {
-  --paper:      #f4f0e6;
-  --paper-2:    #fbf9f4;
-  --ink:        #17140f;
-  --ink-soft:   #5f5849;
-  --ink-faint:  #8c8474;
-  --rule:       #d4cdba;
-  --rule-soft:  #e4ded0;
-  --accent:     #a8301a;
-  --accent-dim: #a8301a1a;
-  --good:       #1f6b41;
-  --good-dim:   #1f6b4114;
-  --shadow:     0 1px 2px rgba(23,20,15,.06), 0 8px 24px -12px rgba(23,20,15,.18);
+  --paper:       #f4f0e6;
+  --paper-2:     #fbf9f4;
+  --paper-card:  #ffffff;
+  --ink:         #17140f;
+  --ink-soft:    #5f5849;
+  --ink-faint:   #8c8474;
+  --rule:        #d4cdba;
+  --rule-soft:   #e4ded0;
+  --accent:      #a8301a;
+  --accent-dim:  #a8301a18;
+  --good:        #1f6b41;
+  --good-dim:    #1f6b4114;
+  --shadow-sm:   0 1px 3px rgba(23,20,15,.06);
+  --shadow:      0 2px 8px -2px rgba(23,20,15,.08), 0 12px 28px -12px rgba(23,20,15,.14);
   --display: ui-serif, "Iowan Old Style", "New York", "Hoefler Text", Georgia, "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   --measure: 1180px;
 }
 :root[data-theme="dark"] {
-  --paper:      #131110;
-  --paper-2:    #1c1917;
-  --ink:        #ece5d6;
-  --ink-soft:   #a49c8b;
-  --ink-faint:  #7a7264;
-  --rule:       #332e28;
-  --rule-soft:  #262220;
-  --accent:     #e2704f;
-  --accent-dim: #e2704f1f;
-  --good:       #5cb98a;
-  --good-dim:   #5cb98a1a;
-  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  --paper:       #131110;
+  --paper-2:     #1c1917;
+  --paper-card:  #24201d;
+  --ink:         #ece5d6;
+  --ink-soft:    #a49c8b;
+  --ink-faint:   #7a7264;
+  --rule:        #332e28;
+  --rule-soft:   #262220;
+  --accent:      #e2704f;
+  --accent-dim:  #e2704f1f;
+  --good:        #5cb98a;
+  --good-dim:    #5cb98a1a;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.3);
+  --shadow:      0 2px 8px -2px rgba(0,0,0,.5), 0 12px 28px -12px rgba(0,0,0,.7);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper:#131110; --paper-2:#1c1917; --ink:#ece5d6; --ink-soft:#a49c8b;
+    --paper:#131110; --paper-2:#1c1917; --paper-card:#24201d; --ink:#ece5d6; --ink-soft:#a49c8b;
     --ink-faint:#7a7264; --rule:#332e28; --rule-soft:#262220;
     --accent:#e2704f; --accent-dim:#e2704f1f; --good:#5cb98a; --good-dim:#5cb98a1a;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+    --shadow-sm:0 1px 3px rgba(0,0,0,.3); --shadow:0 2px 8px -2px rgba(0,0,0,.5), 0 12px 28px -12px rgba(0,0,0,.7);
   }
 }
 
-/* Фирменные цвета банков приходят из данных как есть. Тёмно-синий ВТБ
-   (#0A2896) на угольном фоне сливается — в тёмной теме подмешиваем белый. */
+/* Фирменные цвета банков приходят из данных как есть */
 [style*="--bar"] { --bar-vis: var(--bar); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) [style*="--bar"] { --bar-vis: color-mix(in srgb, var(--bar) 55%, #fff); }
@@ -70,7 +73,6 @@ body {
   font-size: 17px;
   line-height: 1.55;
   overflow-x: hidden;
-  /* Зерно бумаги — inline SVG, ничего не грузится извне. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
 :root[data-theme="dark"] body { background-blend-mode: screen; }
@@ -91,7 +93,7 @@ body {
 .nav-mark {
   font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
   text-transform: uppercase; color: var(--accent); font-weight: 700;
-  white-space: nowrap;
+  white-space: nowrap; text-decoration: none;
 }
 .nav-links { display: flex; gap: 1.1rem; overflow-x: auto; scrollbar-width: none; flex: 1; }
 .nav-links::-webkit-scrollbar { display: none; }
@@ -117,7 +119,7 @@ body {
 }
 
 /* ── шапка ─────────────────────────────────────────────────── */
-.masthead { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+.masthead { padding: clamp(2.5rem, 6vw, 4.5rem) 0 2rem; }
 .masthead .kicker {
   font-family: var(--mono); font-size: .7rem; letter-spacing: .2em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem;
@@ -125,42 +127,237 @@ body {
 }
 .masthead .kicker::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 .masthead h1 {
-  font-size: clamp(2.4rem, 7.5vw, 5.2rem); line-height: .98; margin: 0 0 1.2rem;
+  font-size: clamp(2.3rem, 6.5vw, 4.8rem); line-height: .98; margin: 0 0 1.2rem;
   font-weight: 600; letter-spacing: -.025em;
 }
 .masthead h1 em { font-style: italic; color: var(--accent); }
 .lede {
-  font-size: clamp(1.02rem, 1.9vw, 1.24rem); color: var(--ink-soft);
-  max-width: 46ch; margin: 0 0 2rem;
+  font-size: clamp(1.02rem, 1.8vw, 1.2rem); color: var(--ink-soft);
+  max-width: 52ch; margin: 0 0 2rem;
 }
 .meta {
-  display: flex; flex-wrap: wrap; gap: .5rem 2rem;
+  display: flex; flex-wrap: wrap; gap: .6rem 2rem;
   font-family: var(--mono); font-size: .72rem; letter-spacing: .06em;
   text-transform: uppercase; color: var(--ink-faint);
   padding-top: 1.2rem; border-top: 3px double var(--rule);
 }
 .meta b { color: var(--ink); font-weight: 500; }
 
+/* ── KPI блоки ─────────────────────────────────────────────── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
+  margin: 2rem 0 1rem;
+}
+@media (min-width: 820px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+.kpi-box {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: 1rem 1.2rem; display: flex; flex-direction: column;
+}
+.kpi-box .label {
+  font-family: var(--sans); font-size: .68rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .4rem;
+}
+.kpi-box .val {
+  font-family: var(--mono); font-size: 1.8rem; font-weight: 700;
+  line-height: 1; color: var(--ink);
+}
+.kpi-box .val.good { color: var(--good); }
+.kpi-box .sub {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-soft);
+  margin-top: .4rem;
+}
+
 /* ── секции ────────────────────────────────────────────────── */
-section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
-.head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+section { padding: clamp(2.2rem, 5vw, 4rem) 0; }
+.head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.8rem; flex-wrap: wrap; }
 .head .num {
   font-family: var(--mono); font-size: .72rem; color: var(--accent);
   letter-spacing: .1em; padding-top: .5rem;
 }
 .head h2 {
-  font-size: clamp(1.5rem, 3.4vw, 2.3rem); margin: 0; font-weight: 600;
+  font-size: clamp(1.4rem, 3.2vw, 2.1rem); margin: 0; font-weight: 600;
   letter-spacing: -.018em;
 }
 .head .note {
   font-family: var(--sans); font-size: .8rem; color: var(--ink-faint);
-  margin-left: auto; text-align: right; max-width: 30ch;
+  margin-left: auto; text-align: right; max-width: 32ch;
+}
+
+/* ── интерактивный калькулятор ─────────────────────────────── */
+.calc-card {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: clamp(1.4rem, 3vw, 2.2rem); margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+.calc-controls {
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+@media (min-width: 800px) {
+  .calc-controls { grid-template-columns: 1.6fr 1fr; align-items: start; }
+}
+.calc-field label {
+  display: block; font-family: var(--sans); font-size: .8rem;
+  font-weight: 600; color: var(--ink); margin-bottom: .6rem;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.slider-wrap { display: flex; flex-direction: column; gap: .7rem; }
+.slider-row { display: flex; align-items: center; gap: 1rem; }
+.calc-slider {
+  flex: 1; -webkit-appearance: none; appearance: none; height: 6px;
+  background: var(--rule); border-radius: 3px; outline: none; cursor: pointer;
+}
+.calc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  border: 2px solid var(--paper-2); box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  transition: transform .15s;
+}
+.calc-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.calc-val-display {
+  font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+  color: var(--accent); min-width: 140px; text-align: right;
+  white-space: nowrap;
+}
+.calc-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.calc-chip {
+  font-family: var(--sans); font-size: .73rem; padding: .25rem .6rem;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink-soft);
+  cursor: pointer; border-radius: 4px; transition: all .15s;
+}
+.calc-chip:hover { border-color: var(--accent); color: var(--ink); }
+.calc-chip.on {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.calc-options {
+  display: flex; flex-direction: column; gap: .8rem;
+  padding: 1rem; background: var(--paper); border: 1px solid var(--rule-soft);
+}
+.opt-label {
+  display: flex; align-items: center; gap: .6rem; font-family: var(--sans);
+  font-size: .82rem; color: var(--ink); cursor: pointer; user-select: none;
+}
+.opt-label input[type="checkbox"] {
+  width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer;
+}
+
+/* Результаты калькулятора */
+.calc-results-grid {
+  display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) {
+  .calc-results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1020px) {
+  .calc-results-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.calc-result-card {
+  background: var(--paper-card); border: 1px solid var(--rule);
+  padding: 1.2rem; display: flex; flex-direction: column; position: relative;
+  border-top: 3px solid var(--bar-vis, var(--rule));
+  transition: transform .2s, box-shadow .2s;
+}
+.calc-result-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.calc-result-card.is-winner {
+  border-color: var(--good); border-top-width: 4px;
+  background: color-mix(in srgb, var(--good-dim) 35%, var(--paper-card));
+}
+.calc-rank {
+  font-family: var(--mono); font-size: .65rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .2rem;
+}
+.calc-rank.win-badge {
+  color: var(--good); font-weight: 700;
+}
+.calc-card-name { font-size: 1.15rem; font-weight: 600; margin: 0 0 .5rem; }
+.calc-total-box {
+  margin: .6rem 0; padding: .6rem 0;
+  border-top: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft);
+}
+.calc-total-sum {
+  font-family: var(--mono); font-size: 1.85rem; font-weight: 700;
+  line-height: 1; color: var(--ink);
+}
+.calc-total-sum.win-sum { color: var(--good); }
+.calc-total-period {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-faint);
+  text-transform: uppercase; margin-left: .2rem;
+}
+.calc-breakdown {
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-soft);
+  display: flex; flex-direction: column; gap: .25rem; margin-top: .4rem;
+}
+.calc-breakdown-row { display: flex; justify-content: space-between; }
+.calc-savings {
+  margin-top: .7rem; padding: .35rem .5rem; background: var(--good-dim);
+  border-left: 2px solid var(--good); font-family: var(--sans);
+  font-size: .72rem; color: var(--good); font-weight: 600;
+}
+.calc-note {
+  font-family: var(--sans); font-size: .72rem; color: var(--ink-faint);
+  margin-top: .6rem; line-height: 1.35;
+}
+
+/* ── тулбар фильтрации и поиска ────────────────────────────── */
+.toolbar {
+  background: var(--paper-2); border: 1px solid var(--rule);
+  padding: 1rem 1.25rem; margin-bottom: 1.8rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.tool-top { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.search-box {
+  flex: 1; min-width: 240px; position: relative; display: flex; align-items: center;
+}
+.search-box input {
+  width: 100%; height: 2.3rem; padding: 0 .8rem 0 2.2rem;
+  background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .84rem; color: var(--ink);
+  outline: none; transition: border-color .2s; border-radius: 2px;
+}
+.search-box input:focus { border-color: var(--accent); }
+.search-icon {
+  position: absolute; left: .7rem; font-size: .85rem; color: var(--ink-faint);
+  pointer-events: none;
+}
+.search-kbd {
+  position: absolute; right: .6rem; font-family: var(--mono); font-size: .62rem;
+  padding: .15rem .35rem; background: var(--paper-2); border: 1px solid var(--rule);
+  color: var(--ink-faint); border-radius: 3px; pointer-events: none;
+}
+.tool-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tool-btn {
+  height: 2.3rem; padding: 0 .8rem; background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .76rem; color: var(--ink-soft);
+  cursor: pointer; display: flex; align-items: center; gap: .4rem;
+  transition: all .2s; border-radius: 2px;
+}
+.tool-btn:hover { border-color: var(--accent); color: var(--ink); }
+
+.tool-filters {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  border-top: 1px solid var(--rule-soft); padding-top: .8rem;
+}
+.filter-label {
+  font-family: var(--sans); font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-faint); margin-right: .3rem;
+}
+.filter-pill {
+  font-family: var(--sans); font-size: .74rem; padding: .25rem .65rem;
+  background: var(--paper); border: 1px solid var(--rule); color: var(--ink-soft);
+  border-radius: 999px; cursor: pointer; transition: all .15s;
+}
+.filter-pill:hover { border-color: var(--accent); color: var(--ink); }
+.filter-pill.on {
+  background: var(--ink); color: var(--paper); border-color: var(--ink);
+}
+.sort-wrap { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
+.sort-select {
+  height: 2rem; padding: 0 .6rem; background: var(--paper); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .76rem; color: var(--ink); outline: none;
+  cursor: pointer;
 }
 
 /* ── карточки банков ───────────────────────────────────────── */
-/* minmax(0,1fr), а не 1fr: иначе grid-элемент не сжимается ниже min-content. */
-/* align-items: start — иначе карточки тянутся по высоте самой длинной
-   в ряду, и у банков с коротким описанием зияет пустота в полэкрана. */
 .banks { display: grid; gap: 1.25rem; align-items: start; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 760px)  { .banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1120px) { .banks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -192,8 +389,6 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
   text-transform: uppercase; letter-spacing: .09em; padding-bottom: .25rem;
 }
 .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
-/* Без nowrap: длинная аудитория акции («новым клиентам и действующим
-   без договора эквайринга 180 дней») иначе распирает карточку на мобиле. */
 .tag {
   font-family: var(--sans); font-size: .69rem; padding: .24rem .55rem;
   border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-soft);
@@ -223,16 +418,46 @@ section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
   border-left: 2px solid var(--accent); line-height: 1.4;
 }
 
+/* ── раскрывающиеся блоки цитат и деталей ───────────────────── */
+.details-toggle {
+  margin-top: .9rem; padding-top: .7rem; border-top: 1px dashed var(--rule-soft);
+}
+.details-toggle summary {
+  font-family: var(--sans); font-size: .74rem; color: var(--accent);
+  cursor: pointer; user-select: none; font-weight: 600; outline: none;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.details-toggle summary:hover { text-decoration: underline; }
+.details-toggle[open] summary { margin-bottom: .8rem; }
+.quote-box {
+  background: var(--paper); border: 1px solid var(--rule-soft);
+  border-left: 2px solid var(--accent); padding: .65rem .85rem;
+  font-family: var(--sans); font-size: .74rem; color: var(--ink-soft);
+  font-style: italic; line-height: 1.45; margin: .5rem 0;
+}
+.quote-box .q-meta {
+  font-style: normal; font-family: var(--mono); font-size: .64rem;
+  color: var(--ink-faint); margin-top: .4rem; text-transform: uppercase;
+}
+.extra-promo-item {
+  padding: .6rem 0; border-top: 1px dotted var(--rule-soft);
+  font-size: .8rem;
+}
+.extra-promo-item:first-child { border-top: 0; }
+
 /* ── таблица ───────────────────────────────────────────────── */
 .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--paper-2); }
-table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: .87rem; }
+table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: .87rem; }
 th, td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
 thead th {
   font-family: var(--mono); font-size: .64rem; letter-spacing: .13em;
   text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
   border-bottom: 2px solid var(--rule); position: sticky; top: 0;
-  background: var(--paper-2); white-space: nowrap;
+  background: var(--paper-2); white-space: nowrap; cursor: pointer;
+  user-select: none;
 }
+thead th:hover { color: var(--accent); }
+thead th::after { content: " ↕"; font-size: .6rem; opacity: .4; }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr { transition: background .2s; }
 tbody tr:hover { background: var(--paper); }
@@ -270,6 +495,16 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
   text-transform: uppercase; color: var(--ink-faint); margin-top: 2rem;
 }
 
+/* ── тост уведомление ──────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 100;
+  background: var(--ink); color: var(--paper); padding: .75rem 1.2rem;
+  font-family: var(--sans); font-size: .82rem; border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
+  transform: translateY(10px); transition: all .25s ease;
+}
+.toast.show { opacity: 1; transform: none; }
+
 /* ── появление при скролле ─────────────────────────────────── */
 .rise { opacity: 0; transform: translateY(18px); }
 .rise.in { animation: rise .7s cubic-bezier(.2,.7,.3,1) forwards; }
@@ -277,8 +512,23 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rise { opacity: 1; transform: none; animation: none !important; }
-  .bar-fill { animation: none; }
   * { transition: none !important; }
+}
+
+/* ── стили для печати (PDF / экспорт) ──────────────────────── */
+@media print {
+  body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+  .nav, .theme, .calc-controls, .toolbar, .toast, .calc-chips { display: none !important; }
+  .wrap { max-width: 100% !important; padding: 0 !important; }
+  .masthead { padding: 1rem 0 !important; }
+  .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .banks { grid-template-columns: repeat(2, 1fr) !important; gap: .8rem !important; }
+  .bank, .calc-card, .kpi-box { border: 1px solid #999 !important; box-shadow: none !important; page-break-inside: avoid; }
+  details { display: block !important; }
+  details summary { display: none !important; }
+  details[open] { display: block !important; }
+  table { min-width: 100% !important; }
+  footer { page-break-before: auto; }
 }
 </style>
 </head>
@@ -286,10 +536,12 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <nav class="nav">
   <div class="wrap nav-in">
-    <span class="nav-mark">Торговый&nbsp;эквайринг</span>
+    <a href="#" class="nav-mark">Торговый&nbsp;эквайринг</a>
     <div class="nav-links">
+      <a href="#calc">Калькулятор</a>
       <a href="#banks">Банки</a>
       <a href="#table">Сравнение</a>
+      <a href="#notes">Оговорки</a>
     </div>
     <button class="theme" id="theme" type="button" aria-label="Переключить тему">
       <span class="moon" aria-hidden="true">◑</span><span class="sun" aria-hidden="true">◐</span>
@@ -298,12 +550,36 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 </nav>
 
 <header class="wrap masthead">
-  <div class="kicker">Обзор рынка · {{ rows|length }} {{ plural(rows|length, 'банк', 'банка', 'банков') }}</div>
+  <div class="kicker">Мониторинг рынка · {{ rows|length }} {{ plural(rows|length, 'банк', 'банка', 'банков') }}</div>
   <h1>Специальные предложения<br>банков по <em>эквайрингу</em></h1>
   <p class="lede">
-    Что банки предлагают бизнесу прямо сейчас: ставки, промо-периоды,
-    дедлайны и условия подключения.
+    Независимый анализ действующих предложений шести крупнейших банков: ставки,
+    промо-периоды, стоимость терминалов, дедлайны и скрытые условия.
   </p>
+
+  <div class="kpi-grid">
+    <div class="kpi-box">
+      <span class="label">Лучшая ставка</span>
+      <span class="val good">{{ stats.min_rate|pct }}</span>
+      <span class="sub">минимальная по рынку</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Банков в обзоре</span>
+      <span class="val">{{ stats.total_banks }}</span>
+      <span class="sub">Сбер, Альфа, ГПБ, ВТБ, Т-Банк, БСПБ</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Действующих акций</span>
+      <span class="val">{{ stats.promos_count }}</span>
+      <span class="sub">промо-ставок и бонусов</span>
+    </div>
+    <div class="kpi-box">
+      <span class="label">Бесплатный терминал</span>
+      <span class="val">{{ stats.free_terminals_count }} / {{ stats.total_banks }}</span>
+      <span class="sub">банков без платы за аренду</span>
+    </div>
+  </div>
+
   <div class="meta">
     <span>Актуально на <b>{{ today|ru_date }}</b></span>
     <span>Источники: <b>{{ rows|length }} {{ plural(rows|length, 'официальный сайт', 'официальных сайта', 'официальных сайтов') }}</b></span>
@@ -313,16 +589,113 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <main>
 
-<section id="banks" class="wrap">
+<!-- ── СЕКЦИЯ 01: КАЛЬКУЛЯТОР ───────────────────────────────── -->
+<section id="calc" class="wrap">
   <div class="head">
     <span class="num">01</span>
+    <h2>Калькулятор расходов</h2>
+    <span class="note">Введите ваш ежемесячный оборот, чтобы увидеть реальную стоимость каждого банка</span>
+  </div>
+
+  <div class="calc-card rise">
+    <div class="calc-controls">
+      <div class="calc-field">
+        <label for="turnover-slider">Месячный оборот по картам (₽)</label>
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <input type="range" id="turnover-slider" class="calc-slider" min="50000" max="5000000" step="50000" value="500000">
+            <span id="turnover-display" class="calc-val-display">500 000 ₽</span>
+          </div>
+          <div class="calc-chips">
+            <button type="button" class="calc-chip" data-val="100000">100 тыс.</button>
+            <button type="button" class="calc-chip" data-val="300000">300 тыс.</button>
+            <button type="button" class="calc-chip on" data-val="500000">500 тыс.</button>
+            <button type="button" class="calc-chip" data-val="1000000">1 млн</button>
+            <button type="button" class="calc-chip" data-val="2000000">2 млн</button>
+            <button type="button" class="calc-chip" data-val="5000000">5 млн</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-options">
+        <label class="opt-label">
+          <input type="checkbox" id="calc-is-new" checked>
+          <span>Новый клиент (учитывать приветственные промо-акции)</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="calc-terminal-needed" checked>
+          <span>Нужен POS-терминал от банка</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="calc-results" class="calc-results-grid">
+      <!-- Генерируется на клиенте скриптом -->
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ── СЕКЦИЯ 02: БАНКИ И ФИЛЬТРЫ ───────────────────────────── -->
+<section id="banks" class="wrap">
+  <div class="head">
+    <span class="num">02</span>
     <h2>Предложения банков</h2>
     <span class="note">Зелёным отмечена лучшая ставка на рынке</span>
   </div>
-  <div class="banks">
+
+  <div class="toolbar rise">
+    <div class="tool-top">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="bank-search" placeholder="Поиск по названию банка, условиям, акциям... (нажмите /)" autocomplete="off">
+        <span class="search-kbd">/</span>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn" id="btn-copy" title="Скопировать сводку всех тарифов в буфер">
+          <span>📋</span> Скопировать сводку
+        </button>
+        <button type="button" class="tool-btn" id="btn-csv" title="Скачать таблицу в формате CSV для Excel">
+          <span>📥</span> Скачать CSV
+        </button>
+        <button type="button" class="tool-btn" id="btn-print" title="Печать или экспорт страницы в PDF" onclick="window.print()">
+          <span>🖨️</span> Печать / PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="tool-filters">
+      <span class="filter-label">Фильтр:</span>
+      <button type="button" class="filter-pill on" data-filter="all">Все ({{ rows|length }})</button>
+      <button type="button" class="filter-pill" data-filter="promos">🔥 С акциями</button>
+      <button type="button" class="filter-pill" data-filter="free-terminal">🎁 Бесплатный терминал</button>
+      <button type="button" class="filter-pill" data-filter="fast-payout">⚡ Быстрое зачисление</button>
+      <button type="button" class="filter-pill" data-filter="rate-low">👍 Ставка ≤ 1%</button>
+
+      <div class="sort-wrap">
+        <span class="filter-label">Сортировка:</span>
+        <select id="bank-sort" class="sort-select">
+          <option value="rate">По лучшей ставке (min → max)</option>
+          <option value="name">По алфавиту</option>
+          <option value="promos">По числу акций</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="banks" id="banks-grid">
     {% for r in rows %}
     {% set b = r.bank %}
-    <article class="bank rise" style="--bar: {{ b.color }}">
+    <article class="bank rise"
+             id="bank-{{ b.id }}"
+             data-id="{{ b.id }}"
+             data-name="{{ b.name|lower }}"
+             data-rate="{{ b.best_rate if b.best_rate is not none else 99 }}"
+             data-promos="{{ r.active|length }}"
+             data-free-terminal="{{ '1' if '0 ₽' in r.terminal_info or 'бесплатн' in r.terminal_info|lower else '0' }}"
+             data-fast-payout="{{ '1' if 'день в день' in r.settlement_speed|lower or 'до 5 раз' in r.settlement_speed|lower else '0' }}"
+             style="--bar: {{ b.color }}">
       <h3>{{ b.name }}</h3>
       <a class="url" href="{{ b.source_url }}" target="_blank" rel="noopener">{{ b.source_url }}</a>
 
@@ -350,16 +723,10 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       <div class="promo-note">{{ b.base_rate_note or 'Временных акций не заявлено' }}</div>
       {% endif %}
 
-      {% if r.active|length > 1 %}
-      <ul class="cond">
-        {% for p in r.active[1:] %}
-        <li><b>{{ p.title }}</b>{% if p.rate_note %} — {{ p.rate_note }}{% endif %}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-
       <dl class="kv">
         <dt>Базовая ставка</dt><dd><span class="mono">{{ b.base_rate_from|pct }}</span></dd>
+        <dt>Терминал</dt><dd><span>{{ r.terminal_info }}</span></dd>
+        <dt>Зачисление</dt><dd><span>{{ r.settlement_speed }}</span></dd>
         {% if r.days_left is not none %}
         <dt>До конца акции</dt><dd><span class="mono">{{ r.days_left }} дн.</span></dd>
         {% endif %}
@@ -372,6 +739,51 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       {% endif %}
 
       {% if b.notes %}<div class="flag">{{ b.notes[0] }}</div>{% endif %}
+
+      <details class="details-toggle">
+        <summary>Все условия и цитаты с сайта <span>▾</span></summary>
+        <div>
+          {% if b.base_rate_quote %}
+          <div class="quote-box">
+            «{{ b.base_rate_quote }}»
+            <div class="q-meta">Цитата со страницы базового тарифа · проверено {{ b.checked_at|ru_date }}</div>
+          </div>
+          {% endif %}
+
+          {% if r.active %}
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все действующие акции ({{ r.active|length }}):</div>
+          {% for p in r.active %}
+          <div class="extra-promo-item">
+            <b>{{ p.title }}</b>
+            {% if p.rate is not none %}<span class="mono" style="color:var(--good);font-weight:700;"> {{ p.rate|pct }}</span>{% endif %}
+            {% if p.rate_note %}<div style="color:var(--ink-soft);font-size:.75rem;">{{ p.rate_note }}</div>{% endif %}
+            {% if p.valid_until %}<div style="color:var(--ink-faint);font-size:.7rem;">Срок: до {{ p.valid_until|ru_date }}</div>{% endif %}
+            {% if p.conditions %}
+            <ul class="cond" style="margin:.4rem 0 0;">
+              {% for cond in p.conditions %}<li>{{ cond }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if p.source_quote %}
+            <div class="quote-box" style="margin-top:.4rem;">«{{ p.source_quote }}»</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% endif %}
+
+          {% if b.extras|length > 3 %}
+          <div style="font-weight:600;font-size:.78rem;margin:.6rem 0 .3rem;">Все преимущества:</div>
+          <ul class="cond">
+            {% for e in b.extras %}<li>{{ e }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+
+          {% if b.vat_note %}
+          <div style="font-size:.75rem;color:var(--ink-soft);margin-top:.5rem;">
+            <b>НДС:</b> {{ b.vat_note }}
+          </div>
+          {% endif %}
+        </div>
+      </details>
     </article>
     {% endfor %}
   </div>
@@ -379,27 +791,31 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 
 <hr class="rule">
 
+<!-- ── СЕКЦИЯ 03: ТАБЛИЦА СРАВНЕНИЯ ─────────────────────────── -->
 <section id="table" class="wrap">
   <div class="head">
-    <span class="num">02</span>
+    <span class="num">03</span>
     <h2>Сводное сравнение</h2>
-    <span class="note">Прокрутите таблицу вбок на узком экране</span>
+    <span class="note">Нажмите на заголовок колонки для сортировки. Прокрутите вбок на мобильном</span>
   </div>
   <div class="scroller rise">
-    <table>
+    <table id="compare-table">
       <thead>
         <tr>
-          <th>Банк</th>
-          <th>Главное предложение</th>
-          <th>Ставка</th>
-          <th>Срок</th>
+          <th data-sort-key="name">Банк</th>
+          <th data-sort-key="promo">Главное предложение</th>
+          <th data-sort-key="best">Лучшая ставка</th>
+          <th data-sort-key="base">Базовая</th>
+          <th data-sort-key="terminal">Терминал</th>
+          <th data-sort-key="payout">Зачисление</th>
+          <th data-sort-key="deadline">Срок акции</th>
           <th>НДС</th>
         </tr>
       </thead>
       <tbody>
         {% for r in rows %}
         {% set b = r.bank %}
-        <tr>
+        <tr data-name="{{ b.name }}" data-rate="{{ b.best_rate if b.best_rate is not none else 99 }}">
           <td class="name" style="--bar: {{ b.color }}">{{ b.name }}</td>
           <td>
             {% if r.headline %}{{ r.headline.title }}
@@ -407,6 +823,9 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
             {% else %}<span class="sub">{{ b.base_rate_note or '—' }}</span>{% endif %}
           </td>
           <td><span class="num-cell {{ 'best' if r.is_best_rate }}">{{ b.best_rate|pct }}</span></td>
+          <td><span class="num-cell">{{ b.base_rate_from|pct }}</span></td>
+          <td><span class="sub" style="margin-top:0">{{ r.terminal_info }}</span></td>
+          <td><span class="sub" style="margin-top:0">{{ r.settlement_speed }}</span></td>
           <td>
             {% if r.deadline %}<span class="num-cell">до {{ r.deadline|ru_date }}</span>
               <span class="sub">{{ r.days_left }} дн.</span>
@@ -421,13 +840,22 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       </tbody>
     </table>
   </div>
+</section>
 
-  {% set flagged = rows|selectattr('bank.notes')|list %}
-  {% if flagged %}
+<hr class="rule">
+
+<!-- ── СЕКЦИЯ 04: ОГОВОРКИ ───────────────────────────────────── -->
+<section id="notes" class="wrap">
+  <div class="head">
+    <span class="num">04</span>
+    <h2>Оговорки и расхождения</h2>
+    <span class="note">Важные юридические детали, тарифные нюансы и завершённые акции</span>
+  </div>
+
   <div class="notes rise">
-    <h4>Оговорки и расхождения</h4>
+    <h4>Особенности и сноски по тарифам</h4>
     <ul>
-      {% for r in flagged %}
+      {% for r in rows %}
         {% for n in r.bank.notes %}
         <li><b>{{ r.bank.name }}:</b> {{ n }}</li>
         {% endfor %}
@@ -439,7 +867,6 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
       {% endfor %}
     </ul>
   </div>
-  {% endif %}
 </section>
 
 </main>
@@ -447,10 +874,9 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
 <footer class="wrap">
   <p class="disclaimer">
     <strong>Информация актуальна на {{ today|ru_date }} и не является публичной офертой.</strong>
-    Данные собраны с официальных сайтов банков автоматически и могут содержать неточности
-    из-за изменений на стороне банка. Точные тарифы, лимиты и условия участия в акциях
-    уточняйте в банке перед заключением договора. Ставки указаны без учёта индивидуальных
-    условий, которые банк может предложить по результатам рассмотрения заявки.
+    Данные собраны с официальных сайтов банков автоматически через Playwright и Gemini с верификацией
+    дословных цитат. Тарифы могут содержать индивидуальные надбавки в зависимости от региона, оборота
+    и сферы деятельности компании. Точные условия уточняйте в обслуживающем банке перед заключением договора.
   </p>
   <div class="sources">
     {% for r in rows %}
@@ -458,34 +884,398 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
     {% endfor %}
   </div>
   <div class="colophon">
-    Сгенерировано {{ published_at.strftime('%d.%m.%Y в %H:%M') }} · данные от {{ generated_at.strftime('%d.%m.%Y') }}
+    Сгенерировано {{ published_at.strftime('%d.%m.%Y в %H:%M') }} · данные банков от {{ generated_at.strftime('%d.%m.%Y') }}
   </div>
 </footer>
 
+<div id="toast" class="toast">Уведомление</div>
+
+<!-- Данные для клиента (ноль внешних запросов) -->
+<script id="banks-data" type="application/json">
+{{ banks_json|safe }}
+</script>
+
 <script>
 (function () {
-  // Тема: системная по умолчанию, ручной выбор запоминается.
-  var root = document.documentElement;
-  var saved = null;
-  try { saved = localStorage.getItem('theme'); } catch (e) {}
-  var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  root.setAttribute('data-theme', saved || (sysDark ? 'dark' : 'light'));
+  'use strict';
 
-  document.getElementById('theme').addEventListener('click', function () {
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
+  // 1. Тема
+  var root = document.documentElement;
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+  var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', savedTheme || (sysDark ? 'dark' : 'light'));
+
+  var themeBtn = document.getElementById('theme');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  }
+
+  // 2. Данные банков
+  var banksData = [];
+  try {
+    banksData = JSON.parse(document.getElementById('banks-data').textContent || '[]');
+  } catch (e) {
+    console.error('Failed to parse banks data', e);
+  }
+
+  // 3. Калькулятор расходов
+  var slider = document.getElementById('turnover-slider');
+  var display = document.getElementById('turnover-display');
+  var isNewCheck = document.getElementById('calc-is-new');
+  var termNeededCheck = document.getElementById('calc-terminal-needed');
+  var resultsContainer = document.getElementById('calc-results');
+  var chips = document.querySelectorAll('.calc-chip');
+
+  function fmtRub(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  }
+
+  function calcBankCost(bank, turnover, isNew, termNeeded) {
+    var feeRate = bank.base_rate_from;
+    var promoNote = '';
+    var terminalCost = 0;
+
+    // Специфические банковские тарифные модели
+    if (bank.id === 'tbank') {
+      if (isNew) {
+        // Т-Банк: 0% на первый месяц на оборот до 300 000 руб, далее от 1.2%
+        if (turnover <= 300000) {
+          feeRate = 0.0;
+          promoNote = 'Акция 0% на первый месяц до 300 тыс. ₽';
+        } else {
+          var promoPortion = 300000 * 0.0;
+          var restPortion = (turnover - 300000) * 0.012;
+          var fee = promoPortion + restPortion;
+          feeRate = (fee / turnover) * 100;
+          promoNote = '0% на первые 300 тыс. ₽, далее 1,2%';
+        }
+      } else {
+        feeRate = bank.base_rate_from || 1.2;
+      }
+      terminalCost = 0; // В Т-Банке аренда 0 ₽
+    } else if (bank.id === 'sber') {
+      if (isNew) {
+        // Сбер: 1% первые 3 мес на оборот до 300 000 руб
+        if (turnover <= 300000) {
+          feeRate = 1.0;
+          promoNote = 'Промо-ставка 1% на первые 3 месяца';
+        } else {
+          var feeSber = (300000 * 0.01) + ((turnover - 300000) * 0.015);
+          feeRate = (feeSber / turnover) * 100;
+          promoNote = '1% на первые 300 тыс. ₽, далее базовая';
+        }
+        terminalCost = 0;
+      } else {
+        feeRate = bank.base_rate_from || 1.5;
+        terminalCost = 0;
+      }
+    } else if (bank.id === 'alfa') {
+      if (isNew) {
+        feeRate = 1.0;
+        promoNote = 'Ставка 1% на первые 3 месяца';
+      } else {
+        feeRate = 1.4; // Базовая шкала Альфы от оборота
+      }
+      terminalCost = 0; // Бесплатная аренда
+    } else if (bank.id === 'bspb') {
+      feeRate = bank.base_rate_from || 0.9;
+      // В БСПБ: при обороте < 300 000 руб на терминале плата 1000 руб
+      if (termNeeded && turnover < 300000) {
+        terminalCost = 1000;
+        promoNote = 'Плата 1000 ₽ за терминал при обороте < 300 тыс. ₽';
+      } else {
+        terminalCost = 0;
+      }
+    } else if (bank.id === 'vtb') {
+      feeRate = bank.base_rate_from || 1.3;
+      terminalCost = 0;
+      promoNote = 'Тариф от 1,3% (для фастфуда/авиабилетов)';
+    } else if (bank.id === 'gpb') {
+      // ГПБ: индивидуальный расчет (рыночный бенчмарк ~1.3%)
+      feeRate = 1.3;
+      terminalCost = 0;
+      promoNote = 'Индивидуальный расчет по обороту';
+    } else {
+      feeRate = bank.base_rate_from || 1.5;
+      terminalCost = 0;
+    }
+
+    var feeAmount = (turnover * (feeRate / 100));
+    var totalCost = feeAmount + terminalCost;
+
+    return {
+      bank: bank,
+      feeRate: feeRate,
+      feeAmount: feeAmount,
+      terminalCost: terminalCost,
+      totalCost: totalCost,
+      promoNote: promoNote
+    };
+  }
+
+  function updateCalculator() {
+    if (!slider || !resultsContainer || !banksData.length) return;
+    var turnover = parseInt(slider.value, 10);
+    var isNew = isNewCheck ? isNewCheck.checked : true;
+    var termNeeded = termNeededCheck ? termNeededCheck.checked : true;
+
+    display.textContent = fmtRub(turnover);
+
+    var calculated = banksData.map(function (b) {
+      return calcBankCost(b, turnover, isNew, termNeeded);
+    });
+
+    // Сортировка по возрастанию итоговых затрат
+    calculated.sort(function (a, b) {
+      return a.totalCost - b.totalCost;
+    });
+
+    var maxCost = calculated[calculated.length - 1].totalCost;
+
+    resultsContainer.innerHTML = '';
+    calculated.forEach(function (res, idx) {
+      var card = document.createElement('div');
+      var isWin = idx === 0;
+      card.className = 'calc-result-card' + (isWin ? ' is-winner' : '');
+      card.style.setProperty('--bar-vis', res.bank.color || '#333');
+
+      var savings = maxCost - res.totalCost;
+      var savingsHtml = (savings > 100 && !isWin)
+        ? '<div class="calc-savings">Экономия ' + fmtRub(savings) + '/мес vs самого дорогого</div>'
+        : (isWin ? '<div class="calc-savings" style="background:var(--good-dim);color:var(--good);">★ Самый выгодный вариант на этом обороте!</div>' : '');
+
+      card.innerHTML =
+        '<div class="calc-rank ' + (isWin ? 'win-badge' : '') + '">#' + (idx + 1) + ' в рейтинге выгоды</div>' +
+        '<div class="calc-card-name">' + res.bank.name + '</div>' +
+        '<div class="calc-total-box">' +
+          '<span class="calc-total-sum ' + (isWin ? 'win-sum' : '') + '">' + fmtRub(res.totalCost) + '</span>' +
+          '<span class="calc-total-period">/ мес</span>' +
+        '</div>' +
+        '<div class="calc-breakdown">' +
+          '<div class="calc-breakdown-row"><span>Комиссия (~' + res.feeRate.toFixed(2).replace('.', ',') + '%):</span><b>' + fmtRub(res.feeAmount) + '</b></div>' +
+          '<div class="calc-breakdown-row"><span>Терминал:</span><b>' + (res.terminalCost ? fmtRub(res.terminalCost) : '0 ₽') + '</b></div>' +
+        '</div>' +
+        savingsHtml +
+        (res.promoNote ? '<div class="calc-note">Условие: ' + res.promoNote + '</div>' : '');
+
+      resultsContainer.appendChild(card);
+    });
+  }
+
+  if (slider) {
+    slider.addEventListener('input', updateCalculator);
+    chips.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        chips.forEach(function (c) { c.classList.remove('on'); });
+        btn.classList.add('on');
+        slider.value = btn.getAttribute('data-val');
+        updateCalculator();
+      });
+    });
+  }
+  if (isNewCheck) isNewCheck.addEventListener('change', updateCalculator);
+  if (termNeededCheck) termNeededCheck.addEventListener('change', updateCalculator);
+  updateCalculator();
+
+  // 4. Поиск и Фильтрация карточек
+  var searchInput = document.getElementById('bank-search');
+  var filterPills = document.querySelectorAll('.filter-pill');
+  var sortSelect = document.getElementById('bank-sort');
+  var banksGrid = document.getElementById('banks-grid');
+  var cards = [].slice.call(document.querySelectorAll('.bank'));
+
+  var currentFilter = 'all';
+  var currentSearch = '';
+
+  function applyFilterAndSort() {
+    var query = currentSearch.toLowerCase().trim();
+
+    cards.forEach(function (card) {
+      var name = card.getAttribute('data-name') || '';
+      var cardText = card.innerText.toLowerCase();
+      var matchesSearch = !query || name.indexOf(query) !== -1 || cardText.indexOf(query) !== -1;
+
+      var matchesFilter = true;
+      if (currentFilter === 'promos') {
+        matchesFilter = (parseInt(card.getAttribute('data-promos'), 10) || 0) > 0;
+      } else if (currentFilter === 'free-terminal') {
+        matchesFilter = card.getAttribute('data-free-terminal') === '1';
+      } else if (currentFilter === 'fast-payout') {
+        matchesFilter = card.getAttribute('data-fast-payout') === '1';
+      } else if (currentFilter === 'rate-low') {
+        matchesFilter = parseFloat(card.getAttribute('data-rate')) <= 1.0;
+      }
+
+      card.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+    });
+
+    // Сортировка
+    var sortBy = sortSelect ? sortSelect.value : 'rate';
+    var sorted = cards.slice().sort(function (a, b) {
+      if (sortBy === 'rate') {
+        return parseFloat(a.getAttribute('data-rate')) - parseFloat(b.getAttribute('data-rate'));
+      } else if (sortBy === 'name') {
+        return (a.getAttribute('data-name') || '').localeCompare(b.getAttribute('data-name') || '');
+      } else if (sortBy === 'promos') {
+        return (parseInt(b.getAttribute('data-promos'), 10) || 0) - (parseInt(a.getAttribute('data-promos'), 10) || 0);
+      }
+      return 0;
+    });
+
+    sorted.forEach(function (c) { banksGrid.appendChild(c); });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      currentSearch = searchInput.value;
+      applyFilterAndSort();
+    });
+  }
+
+  filterPills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      filterPills.forEach(function (p) { p.classList.remove('on'); });
+      pill.classList.add('on');
+      currentFilter = pill.getAttribute('data-filter');
+      applyFilterAndSort();
+    });
   });
 
-  // Появление блоков при скролле + подсветка активного пункта навигации.
-  var rise = document.querySelectorAll('.rise');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', applyFilterAndSort);
+  }
+
+  // Горячая клавиша / для поиска
+  window.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== searchInput) {
+      e.preventDefault();
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      currentSearch = '';
+      applyFilterAndSort();
+      searchInput.blur();
+    }
+  });
+
+  // 5. Тост-уведомления
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 2800);
+  }
+
+  // 6. Скопировать сводку
+  var btnCopy = document.getElementById('btn-copy');
+  if (btnCopy) {
+    btnCopy.addEventListener('click', function () {
+      var lines = [
+        'Сводка спецпредложений по торговому эквайрингу на ' + '{{ today|ru_date }}:',
+        ''
+      ];
+      banksData.forEach(function (b) {
+        var promoPart = (b.promos && b.promos.length) ? (' (акция: ' + b.promos[0].title + ')') : '';
+        var rateStr = (b.base_rate_from !== null) ? (b.base_rate_from + '%') : 'индивидуально';
+        lines.push('• ' + b.name + ': ставка от ' + rateStr + promoPart);
+      });
+      lines.push('');
+      lines.push('Подробнее: ' + window.location.href);
+
+      navigator.clipboard.writeText(lines.join('\n')).then(function () {
+        showToast('Сводка тарифов скопирована в буфер обмена!');
+      }).catch(function () {
+        showToast('Не удалось скопировать сводку.');
+      });
+    });
+  }
+
+  // 7. Скачать CSV
+  var btnCsv = document.getElementById('btn-csv');
+  if (btnCsv) {
+    btnCsv.addEventListener('click', function () {
+      var rows = [
+        ['Банк', 'Лучшая ставка (%)', 'Базовая ставка (%)', 'Действующих акций', 'Срок акции', 'Ссылка']
+      ];
+      banksData.forEach(function (b) {
+        var best = (b.base_rate_from !== null) ? b.base_rate_from : '';
+        var deadline = '';
+        if (b.promos && b.promos.length && b.promos[0].valid_until) {
+          deadline = b.promos[0].valid_until;
+        }
+        rows.push([
+          '"' + b.name + '"',
+          best,
+          b.base_rate_from || '',
+          (b.promos ? b.promos.length : 0),
+          deadline,
+          b.source_url
+        ]);
+      });
+
+      var csvContent = '\uFEFF' + rows.map(function (e) { return e.join(';'); }).join('\n');
+      var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'acquiring_rates_' + new Date().toISOString().slice(0,10) + '.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV файл сформирован и загружен!');
+    });
+  }
+
+  // 8. Сортировка таблицы по колонкам
+  var table = document.getElementById('compare-table');
+  if (table) {
+    var headers = table.querySelectorAll('th[data-sort-key]');
+    var sortDir = 1;
+    headers.forEach(function (th) {
+      th.addEventListener('click', function () {
+        var colIndex = Array.prototype.indexOf.call(th.parentNode.children, th);
+        var tbody = table.querySelector('tbody');
+        var trs = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        sortDir = -sortDir;
+
+        trs.sort(function (a, b) {
+          var aText = (a.children[colIndex].textContent || '').trim();
+          var bText = (b.children[colIndex].textContent || '').trim();
+          var aNum = parseFloat(aText.replace(',', '.'));
+          var bNum = parseFloat(bText.replace(',', '.'));
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return (aNum - bNum) * sortDir;
+          }
+          return aText.localeCompare(bText) * sortDir;
+        });
+
+        trs.forEach(function (tr) { tbody.appendChild(tr); });
+        showToast('Таблица отсортирована');
+      });
+    });
+  }
+
+  // 9. Анимация появления блоков при скролле
+  var riseEls = document.querySelectorAll('.rise');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       });
-    }, { rootMargin: '0px 0px -12% 0px' });
-    rise.forEach(function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    riseEls.forEach(function (el) { io.observe(el); });
 
     var links = [].slice.call(document.querySelectorAll('.nav-links a'));
     var spy = new IntersectionObserver(function (entries) {
@@ -495,11 +1285,12 @@ footer { border-top: 3px double var(--rule); padding: 2.5rem 0 3.5rem; }
           a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id);
         });
       });
-    }, { rootMargin: '-45% 0px -50% 0px' });
+    }, { rootMargin: '-40% 0px -55% 0px' });
     document.querySelectorAll('main section[id]').forEach(function (s) { spy.observe(s); });
   } else {
-    rise.forEach(function (el) { el.classList.add('in'); });
+    riseEls.forEach(function (el) { el.classList.add('in'); });
   }
+
 })();
 </script>
 </body>
